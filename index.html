@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Les Panas·Lab — Laboratoire de Missions</title>
+<title>Les Panas Lab — Laboratoire de Missions</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -15,7 +15,8 @@
   --blu10:rgba(79,142,247,.1);--yel10:rgba(255,209,102,.1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx1);min-height:100vh;overflow-x:hidden}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx1);min-height:100vh;overflow-x:hidden;
+font-size:17px;}
 h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
 
 /* Grid background */
@@ -50,20 +51,32 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
 .drag-chip{
   cursor:grab;transition:transform .15s,opacity .15s,box-shadow .15s;
   user-select:none;touch-action:none;
-  background:var(--card);border:1px solid var(--brd);color:var(--tx1)
+  background:var(--card);border:1px solid var(--brd);color:var(--tx1);
+  min-height:46px;display:inline-flex;align-items:center;
 }
-.drag-chip:active{cursor:grabbing;transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,.4)}
-.drag-chip.dragging{opacity:.25;transform:scale(.92)}
+.drag-chip:active{cursor:grabbing;transform:scale(1.07);box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.drag-chip.dragging{opacity:.2;transform:scale(.9)}
 .drag-chip.ok{border-color:var(--grn)!important;background:var(--grn10)!important;color:var(--grn)!important}
 .drag-chip.err{border-color:var(--red)!important;background:var(--red10)!important;color:var(--red)!important}
 
+/* Ghost táctil */
+#touch-ghost{
+  position:fixed;pointer-events:none;z-index:9999;
+  opacity:.9;transform:scale(1.12) rotate(2deg);
+  border-radius:.65rem;font-family:'Exo 2',sans-serif;font-weight:700;
+  padding:.6rem 1.1rem;font-size:1rem;
+  background:var(--blu);color:#fff;
+  border:2px solid var(--grn);
+  box-shadow:0 14px 34px rgba(0,0,0,.65);white-space:nowrap;
+}
+
 .drop-zone{
-  min-height:130px;transition:all .2s;border:2px dashed var(--brd);
+  min-height:140px;transition:all .2s;border:2px dashed var(--brd);
   border-radius:1rem
 }
 .drop-zone.over{
-  border-color:var(--grn)!important;background:rgba(0,232,122,.06)!important;
-  transform:scale(1.01)
+  border-color:var(--grn)!important;background:rgba(0,232,122,.08)!important;
+  transform:scale(1.02)
 }
 
 /* Timer bar */
@@ -93,14 +106,15 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
   background:var(--surf);border:1px solid var(--brd);
   transition:all .18s;cursor:pointer;text-align:left;width:100%
 }
-.g3-option:hover{border-color:var(--blu);background:var(--blu10)}
+.g3-option:hover{border-color:var(--blu);background:var(--blu10);outline:none}
 
 /* Nav */
-.nav-bar{background:rgba(6,11,24,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd)}
+.nav-bar{background:rgba(6,11,24,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd)}
 
 /* Cards */
 .game-card{background:var(--card);border:1px solid var(--brd);transition:all .3s;cursor:pointer}
 .game-card:hover{border-color:var(--blu);transform:translateY(-5px);box-shadow:0 12px 36px rgba(79,142,247,.18)}
+.game-card:active{transform:translateY(-2px)}
 
 /* Btns */
 .btn{font-family:'Exo 2',sans-serif;font-weight:700;cursor:pointer;border:none;outline:none;transition:all .2s}
@@ -157,7 +171,8 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
   background:var(--card);border:1px solid var(--brd);color:var(--tx1);
   font-family:'Exo 2',sans-serif;font-weight:600;
   transition:all .18s;cursor:pointer;text-align:left;
-  padding:.85rem 1rem;border-radius:.85rem;width:100%
+  padding:1rem 1.1rem;border-radius:.85rem;width:100%;
+  min-height:54px;font-size:1rem;
 }
 .g2-opt:hover{border-color:var(--blu);background:var(--blu10)}
 .g2-opt.opt-ok{border-color:var(--grn)!important;background:var(--grn10)!important;color:var(--grn)!important;pointer-events:none}
@@ -175,18 +190,20 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
 
 /* Mobile tweaks */
 @media(max-width:640px){
-  .hero-title{font-size:2.3rem!important}
-  .schema-grid{grid-template-columns:1fr!important}
-  .gamecards-grid{grid-template-columns:1fr!important}
-  .g1-zones-grid{grid-template-columns:1fr!important}
-  .g2-opts-grid{grid-template-columns:1fr!important}
+  body{font-size:16px}
+  .hero-title{font-size:2.1rem!important}
+  .schema-grid,.gamecards-grid,.g1-zones-grid,.g2-opts-grid{grid-template-columns:1fr!important}
+  .drag-chip{min-height:50px;padding:.7rem 1.1rem!important;font-size:1.05rem!important}
+  .g2-opt{font-size:1rem!important;padding:.95rem 1rem!important;min-height:58px}
+  .g3-option{padding:.9rem 1rem!important;font-size:1rem!important}
+  .btn{min-height:48px}
 }
 </style>
 </head>
 <body class="grid-bg">
 
-<!-- STARS -->
 <div id="stars-bg" aria-hidden="true"></div>
+<div id="touch-ghost" class="hidden"></div>
 
 <!-- ══════════════════════════════════════════ -->
 <!--  NAV                                      -->
@@ -199,7 +216,7 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
       <span style="background:var(--grn);color:#060B18;font-size:.6rem;font-family:'Exo 2',sans-serif;font-weight:900;padding:2px 6px;border-radius:3px;margin-left:2px">BETA</span>
     </button>
     <div style="display:flex;align-items:center;gap:1rem">
-      <div id="nav-pts" class="hidden exo" style="font-weight:700;font-size:.95rem;color:var(--grn)">
+      <div id="nav-pts" class="hidden exo" style="font-weight:700;font-size:1rem;color:var(--grn)">
         ★ <span id="nav-pts-val">0</span> pts
       </div>
       <button onclick="showLanding()" class="btn btn-ghost" style="padding:.45rem 1rem;border-radius:.6rem;font-size:.85rem">← Inicio</button>
@@ -216,7 +233,7 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
   <div style="max-width:900px;margin:0 auto;padding:3rem 1.5rem 0;text-align:center">
 
     <div class="fade-up" style="display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:2rem;margin-bottom:1.5rem;background:var(--blu10);border:1px solid rgba(79,142,247,.3)">
-      <span style="font-size:.8rem;font-family:'Exo 2',sans-serif;font-weight:600;color:var(--blu)">🎯 PREPARACIÓN PRUEBA  · NIVEAU B1</span>
+      <span style="font-size:.8rem;font-family:'Exo 2',sans-serif;font-weight:600;color:var(--blu)">🎯Le passage du niveau A2 au niveau B1 </span>
     </div>
 
     <h1 class="hero-title fade-up exo" style="font-size:3.2rem;font-weight:900;line-height:1.1;margin-bottom:1rem;animation-delay:.05s">
@@ -268,7 +285,7 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
 
       <!-- Card 1 -->
       <div class="schema-card accent-grn">
-        <div style="font-size:1.8rem;margin-bottom:.85rem">🧩</div>
+        <div style="font-size:1.8rem;margin-bottom:.75rem">🧩</div>
         <h3 class="exo" style="font-size:1.05rem;font-weight:700;color:var(--grn);margin-bottom:.2rem">Le Tri Cognitif</h3>
         <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1rem">Drag & Drop · Clasificación</p>
         <div style="display:flex;flex-direction:column;gap:.55rem;font-size:.83rem">
@@ -277,14 +294,14 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
           <div style="display:flex;gap:.5rem"><span style="color:var(--grn)">▸</span><span><strong>Négation</strong> — Separa estructuras negativas por tipo</span></div>
           <div style="display:flex;gap:.5rem"><span style="color:var(--grn)">▸</span><span><strong>Gérondif</strong> — Simultaneidad vs modo</span></div>
         </div>
-        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--grn10);font-size:.85rem;color:var(--grn)">
+        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--grn10);font-size:.75rem;color:var(--grn)">
           💡 Activa la memoria procedimental mediante movimiento físico
         </div>
       </div>
 
       <!-- Card 2 -->
       <div class="schema-card accent-blu">
-        <div style="font-size:1.8rem;margin-bottom:.85rem">⚡</div>
+        <div style="font-size:1.8rem;margin-bottom:.75rem">⚡</div>
         <h3 class="exo" style="font-size:1.05rem;font-weight:700;color:var(--blu);margin-bottom:.2rem">La Course de Traduction</h3>
         <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1rem">Time Attack · 4 opciones / 7 segundos</p>
         <div style="display:flex;flex-direction:column;gap:.55rem;font-size:.83rem">
@@ -293,14 +310,14 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
           <div style="display:flex;gap:.5rem"><span style="color:var(--blu)">▸</span><span><strong>Subjonctif/Indicatif</strong> — Contraste bajo presión de tiempo</span></div>
           <div style="display:flex;gap:.5rem"><span style="color:var(--blu)">▸</span><span><strong>Vocabulario Temático</strong> — Tecnología, Cine, Medio Ambiente</span></div>
         </div>
-        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--blu10);font-size:.85rem;color:var(--blu)">
+        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--blu10);font-size:.75rem;color:var(--blu)">
           💡 El estrés de tiempo simula la presión real del examen oral
         </div>
       </div>
 
       <!-- Card 3 -->
       <div class="schema-card accent-red">
-        <div style="font-size:1.8rem;margin-bottom:.85rem">💬</div>
+        <div style="font-size:1.8rem;margin-bottom:.75rem">💬</div>
         <h3 class="exo" style="font-size:1.05rem;font-weight:700;color:var(--red);margin-bottom:.2rem">Le Débloqueur</h3>
         <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1rem">Mission Dialogue · Chat NPC</p>
         <div style="display:flex;flex-direction:column;gap:.55rem;font-size:.83rem">
@@ -309,7 +326,7 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
           <div style="display:flex;gap:.5rem"><span style="color:var(--red)">▸</span><span><strong>Registro B2/C1</strong> — Fórmulas pragmáticas contextualizadas</span></div>
           <div style="display:flex;gap:.5rem"><span style="color:var(--red)">▸</span><span><strong>Subjonctif pragmático</strong> — En situación comunicativa real</span></div>
         </div>
-        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--red10);font-size:.85rem;color:var(--red)">
+        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--red10);font-size:.75rem;color:var(--red)">
           💡 Contextualiza la gramática en interacciones auténticas
         </div>
       </div>
@@ -329,52 +346,52 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
     <div class="gamecards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem">
 
       <!-- Game 1 -->
-      <div class="game-card" style="border-radius:1.25rem;padding:1.85rem;text-align:center" onclick="startGame1()">
+      <div class="game-card" style="border-radius:1.25rem;padding:1.75rem;text-align:center" onclick="startGame1()">
         <div style="width:64px;height:64px;border-radius:1rem;background:var(--grn10);border:1px solid rgba(0,232,122,.2);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 1rem">🧩</div>
         <h3 class="exo" style="font-size:1.15rem;font-weight:700;color:var(--grn);margin-bottom:.2rem">Le Tri Cognitif</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.85rem">Drag & Drop</p>
+        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.75rem">Drag & Drop</p>
         <p style="font-size:.85rem;color:var(--tx2);line-height:1.55;margin-bottom:1rem">Arrastra verbos, sustantivos y estructuras a las categorías gramaticales correctas.</p>
         <div style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)">Passé Composé</span>
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)">Genre</span>
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)">Négation</span>
         </div>
-        <button class="btn btn-grn glow-grn" style="width:100%;padding:.7rem;border-radius:.85rem;font-size:.9rem">▶ INICIAR</button>
+        <button class="btn btn-grn glow-grn" style="width:100%;padding:.7rem;border-radius:.75rem;font-size:.9rem">▶ INICIAR</button>
       </div>
 
       <!-- Game 2 -->
-      <div class="game-card" style="border-radius:1.25rem;padding:1.85rem;text-align:center" onclick="startGame2()">
+      <div class="game-card" style="border-radius:1.25rem;padding:1.75rem;text-align:center" onclick="startGame2()">
         <div style="width:64px;height:64px;border-radius:1rem;background:var(--blu10);border:1px solid rgba(79,142,247,.2);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 1rem">⚡</div>
         <h3 class="exo" style="font-size:1.15rem;font-weight:700;color:var(--blu);margin-bottom:.2rem">La Course</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.85rem">Time Attack</p>
+        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.75rem">Time Attack</p>
         <p style="font-size:.85rem;color:var(--tx2);line-height:1.55;margin-bottom:1rem">Elige la respuesta correcta antes de que expire el tiempo. 7 segundos por pregunta.</p>
         <div style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--blu10);color:var(--blu)">Négation</span>
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--blu10);color:var(--blu)">Voix Passive</span>
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--blu10);color:var(--blu)">Subjonctif</span>
         </div>
-        <button class="btn btn-blu" style="width:100%;padding:.7rem;border-radius:.85rem;font-size:.9rem">▶ INICIAR</button>
+        <button class="btn btn-blu" style="width:100%;padding:.7rem;border-radius:.75rem;font-size:.9rem">▶ INICIAR</button>
       </div>
 
       <!-- Game 3 -->
-      <div class="game-card" style="border-radius:1.25rem;padding:1.85rem;text-align:center" onclick="startGame3()">
+      <div class="game-card" style="border-radius:1.25rem;padding:1.75rem;text-align:center" onclick="startGame3()">
         <div style="width:64px;height:64px;border-radius:1rem;background:var(--red10);border:1px solid rgba(255,77,109,.2);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 1rem">💬</div>
         <h3 class="exo" style="font-size:1.15rem;font-weight:700;color:var(--red);margin-bottom:.2rem">Le Débloqueur</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.85rem">Mission Dialogue</p>
+        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.75rem">Mission Dialogue</p>
         <p style="font-size:.85rem;color:var(--tx2);line-height:1.55;margin-bottom:1rem">Elige la respuesta correcta en el chat para desbloquear al NPC y avanzar en la misión.</p>
         <div style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--red10);color:var(--red)">Pragmatique</span>
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--red10);color:var(--red)">Subjonctif</span>
           <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--red10);color:var(--red)">Tourisme</span>
         </div>
-        <button class="btn btn-red" style="width:100%;padding:.7rem;border-radius:.85rem;font-size:.9rem">▶ INICIAR</button>
+        <button class="btn btn-red" style="width:100%;padding:.7rem;border-radius:.75rem;font-size:.9rem">▶ INICIAR</button>
       </div>
 
     </div>
   </div>
 
   <div style="text-align:center;margin-top:3rem;color:var(--tx3);font-size:.8rem">
-    LES PANAS LAB — Prototipo Pedagógico · <span style="color:var(--grn)">Niveau B1</span> · Creado por Analis Carrizales
+    LES PANAS LAB — Prototype pédagogique. · <span style="color:var(--grn)">La progression de l'A2 au B1</span> · Creado por Analis Carrizales
   </div>
 </section>
 
@@ -403,7 +420,7 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
 
     <!-- Topic badge -->
     <div style="margin-bottom:1rem">
-      <span id="g1-badge" class="exo" style="font-size:.82rem;font-weight:600;padding:.25rem .8rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)"></span>
+      <span id="g1-badge" class="exo" style="font-size:.72rem;font-weight:600;padding:.25rem .8rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)"></span>
     </div>
 
     <!-- Word bank -->
@@ -413,7 +430,7 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
          ondragleave="g1Leave(event,this)"
          ondrop="g1Drop(event,this)"
          style="background:var(--surf);border:2px dashed var(--brd);border-radius:1rem;padding:1rem;margin-bottom:1.25rem;transition:all .2s">
-      <p class="exo" style="font-size:.82rem;font-weight:600;color:var(--tx3);margin-bottom:.7rem;letter-spacing:.05em">BANQUE DE MOTS — Arrastra los elementos abajo:</p>
+      <p class="exo" style="font-size:.72rem;font-weight:600;color:var(--tx3);margin-bottom:.7rem;letter-spacing:.05em">BANQUE DE MOTS — Arrastra los elementos abajo:</p>
       <div id="g1-bank" class="chips-area" style="display:flex;flex-wrap:wrap;gap:.5rem;min-height:44px"></div>
     </div>
 
@@ -421,7 +438,7 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
     <div id="g1-zones" class="g1-zones-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem"></div>
 
     <!-- Actions -->
-    <div style="display:flex;gap:.85rem">
+    <div style="display:flex;gap:.75rem">
       <button onclick="checkG1()" class="btn btn-grn" style="flex:1;padding:.8rem;border-radius:.85rem;font-size:.95rem">✓ Verificar Respuestas</button>
       <button onclick="resetG1()" class="btn btn-ghost" style="padding:.8rem 1.2rem;border-radius:.85rem;font-size:.9rem">↺ Resetear</button>
     </div>
@@ -470,8 +487,8 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
     <div style="background:var(--surf);border-radius:3px;overflow:hidden;margin-bottom:.4rem;height:5px">
       <div id="g2-tbar" class="tbar tbar-grn" style="width:100%;transition:none"></div>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:.88rem;color:var(--tx2);margin-bottom:1.25rem">
-      <span id="g2-topic" style="font-size:.85rem"></span>
+    <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--tx2);margin-bottom:1.25rem">
+      <span id="g2-topic" style="font-size:.75rem"></span>
       <span id="g2-tlabel">7s</span>
     </div>
 
@@ -526,11 +543,11 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
     </div>
 
     <!-- NPC info -->
-    <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
       <div style="width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">👩‍💼</div>
       <div>
         <div style="font-size:.9rem;font-weight:600">Sophie Moreau</div>
-        <div style="font-size:.85rem;color:var(--tx2)">Agente de Voyages Verts</div>
+        <div style="font-size:.75rem;color:var(--tx2)">Agente de Voyages Verts</div>
       </div>
       <div style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--grn);box-shadow:0 0 7px var(--grn)"></div>
     </div>
@@ -588,8 +605,6 @@ function showSection(id) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function shuffle(a) { return [...a].sort(() => Math.random() - .5); } 
-  
 /* Stars */
 (function(){
   const bg = document.getElementById('stars-bg');
@@ -605,14 +620,22 @@ function shuffle(a) { return [...a].sort(() => Math.random() - .5); }
   }
 })();
 
+function shuffle(a) { return [...a].sort(() => Math.random() - .5); }
+
+/* ════════════════════════════════════════
+   TOUCH DRAG SYSTEM — Game 1 móvil
+   El HTML5 Drag & Drop no funciona en
+   iOS/Android. Este sistema usa touch
+   events nativos con ghost visual.
+════════════════════════════════════════ */
 let tEl=null,tGhost=null,tOX=0,tOY=0,tLastZ=null;
- 
+
 function addTouchDrag(el){
   /* Evitar duplicar listeners */
   el.removeEventListener('touchstart',onTS);
   el.addEventListener('touchstart',onTS,{passive:false});
 }
- 
+
 function onTS(e){
   e.preventDefault();
   const t=e.touches[0];
@@ -628,7 +651,7 @@ function onTS(e){
   document.addEventListener('touchmove',onTM,{passive:false});
   document.addEventListener('touchend',onTE,{passive:false});
 }
- 
+
 function onTM(e){
   e.preventDefault();
   const t=e.touches[0];
@@ -641,7 +664,7 @@ function onTM(e){
   if(tLastZ&&tLastZ!==zone)tLastZ.classList.remove('over');
   if(zone){zone.classList.add('over');tLastZ=zone;}else tLastZ=null;
 }
- 
+
 function onTE(e){
   e.preventDefault();
   const t=e.changedTouches[0];
@@ -657,52 +680,157 @@ function onTE(e){
   if(zone&&tEl)G1.drop({preventDefault:()=>{}},zone);
   tEl=null;tLastZ=null;
 }
+
 /* ─────────────────────────────────────────────
    GAME 1 DATA
 ───────────────────────────────────────────── */
-const G1_ROUNDS = [
+const G1_ROUNDS=[
   {
-    title: "ÊTRE ou AVOIR ?",
-    sub: "Auxiliaire du Passé Composé · Ronda 1 de 2",
-    inst: "Arrastra cada verbo al auxiliar que usa en el Passé Composé. Recuerda: los verbos de la 'maison d'être' y los pronominales usan ÊTRE.",
-    badge: "📚 Accord du Participe Passé · Passé Composé",
-    cats: [
-      { id:"etre", label:"🔵 ÊTRE",  color:"var(--blu)" },
-      { id:"avoir",label:"🟢 AVOIR", color:"var(--grn)" }
-    ],
-    items: [
-      { w:"aller",   c:"etre",  hint:"Je suis allé(e) → desplazamiento. ÊTRE." },
-      { w:"venir",   c:"etre",  hint:"Il est venu → movimiento de acercamiento. ÊTRE." },
-      { w:"partir",  c:"etre",  hint:"Nous sommes partis → salida. ÊTRE." },
-      { w:"naître",  c:"etre",  hint:"Elle est née → cambio de estado. ÊTRE." },
-      { w:"mourir",  c:"etre",  hint:"Il est mort → cambio de estado. ÊTRE." },
-      { w:"rester",  c:"etre",  hint:"Vous êtes restés → permanencia. ÊTRE." },
-      { w:"tomber",  c:"etre",  hint:"Tu es tombé(e) → movimiento involuntario. ÊTRE." },
-      { w:"entrer",  c:"etre",  hint:"Elle est entrée → desplazamiento interior. ÊTRE." },
-      { w:"finir",   c:"avoir", hint:"J'ai fini → acción transitiva general. AVOIR." },
-      { w:"voir",    c:"avoir", hint:"Tu as vu → percepción, no implica movimiento propio. AVOIR." },
-      { w:"faire",   c:"avoir", hint:"Nous avons fait → acción transitiva. AVOIR." },
-      { w:"prendre", c:"avoir", hint:"Vous avez pris → acción transitiva. AVOIR." }
+    sub:"Auxiliaire du Passé Composé · Ronda 1 de 9",
+    inst:"Arrastra cada verbo al auxiliar que usa en el Passé Composé. Los verbos de la 'maison d'être' y los pronominales usan ÊTRE.",
+    badge:"📚 Accord du Participe Passé · Passé Composé",
+    cats:[{id:"etre",label:"🔵 ÊTRE",color:"var(--blu)"},{id:"avoir",label:"🟢 AVOIR",color:"var(--grn)"}],
+    items:[
+      {w:"aller",  c:"etre", hint:"Je suis allé(e) — desplazamiento. ÊTRE."},
+      {w:"venir",  c:"etre", hint:"Il est venu — movimiento de acercamiento. ÊTRE."},
+      {w:"partir", c:"etre", hint:"Nous sommes partis — salida. ÊTRE."},
+      {w:"naître", c:"etre", hint:"Elle est née — cambio de estado. ÊTRE."},
+      {w:"mourir", c:"etre", hint:"Il est mort — cambio de estado. ÊTRE."},
+      {w:"rester", c:"etre", hint:"Vous êtes restés — permanencia. ÊTRE."},
+      {w:"tomber", c:"etre", hint:"Tu es tombé(e) — movimiento involuntario. ÊTRE."},
+      {w:"entrer", c:"etre", hint:"Elle est entrée — desplazamiento interior. ÊTRE."},
+      {w:"finir",  c:"avoir",hint:"J'ai fini — acción transitiva. AVOIR."},
+      {w:"voir",   c:"avoir",hint:"Tu as vu — percepción sin movimiento propio. AVOIR."},
+      {w:"faire",  c:"avoir",hint:"Nous avons fait — acción transitiva. AVOIR."},
+      {w:"prendre",c:"avoir",hint:"Vous avez pris — acción transitiva. AVOIR."}
     ]
   },
   {
-    title: "MASCULIN ou FÉMININ ?",
-    sub: "Vocabulaire Thématique DELF B2 · Ronda 2 de 2",
-    inst: "Arrastra cada término temático al género gramatical correcto. Atención a los sufijos y los préstamos del inglés.",
-    badge: "📚 Nominalisation · Vocabulaire: Technologie, Médias & Culture",
-    cats: [
-      { id:"masc", label:"🔵 MASCULIN", color:"var(--blu)" },
-      { id:"fem",  label:"🩷 FÉMININ",  color:"var(--red)" }
-    ],
-    items: [
-      { w:"le blog",        c:"masc", hint:"UN blog — empréstamo inglés, siempre masculino." },
-      { w:"la blogosphère", c:"fem",  hint:"UNE blogosphère — sufijo -sphère es femenino." },
-      { w:"le podcast",     c:"masc", hint:"UN podcast — empréstamo inglés, masculino." },
-      { w:"la vidéo",       c:"fem",  hint:"UNE vidéo — abrev. de 'vidéographie' (fém.)." },
-      { w:"le réseau",      c:"masc", hint:"UN réseau social — masculino." },
-      { w:"l'écologie",     c:"fem",  hint:"UNE écologie — sufijo -logie siempre femenino." },
-      { w:"le festival",    c:"masc", hint:"UN festival (Cannes, Berlin...) — masculino." },
-      { w:"la presse",      c:"fem",  hint:"UNE presse en ligne — femenino." }
+    sub:"Vocabulaire Thématique DELF B2 · Ronda 2 de 9",
+    inst:"Arrastra cada término temático al género gramatical correcto. Atención a los sufijos y los préstamos del inglés.",
+    badge:"📚 Nominalisation · Vocabulaire: Technologie & Médias",
+    cats:[{id:"masc",label:"🔵 MASCULIN",color:"var(--blu)"},{id:"fem",label:"🩷 FÉMININ",color:"var(--red)"}],
+    items:[
+      {w:"le blog",        c:"masc",hint:"UN blog — empréstamo inglés, siempre masculino."},
+      {w:"la blogosphère", c:"fem", hint:"UNE blogosphère — sufijo -sphère es femenino."},
+      {w:"le podcast",     c:"masc",hint:"UN podcast — empréstamo inglés, masculino."},
+      {w:"la vidéo",       c:"fem", hint:"UNE vidéo — abrev. de 'vidéographie' (fém.)."},
+      {w:"le réseau",      c:"masc",hint:"UN réseau social — masculino."},
+      {w:"l'écologie",     c:"fem", hint:"UNE écologie — sufijo -logie siempre femenino."},
+      {w:"le festival",    c:"masc",hint:"UN festival (Cannes, Berlin...) — masculino."},
+      {w:"la presse",      c:"fem", hint:"UNE presse en ligne — femenino."}
+    ]
+  },
+  {
+    sub:"Gérondif vs Participe · Ronda 3 de 9",
+    inst:"Separa el gérondif (EN + participio) del participio usado como adjetivo.",
+    badge:"📚 Gérondif · Formas Verbales",
+    cats:[{id:"gerondif",label:"⚡ GÉRONDIF (EN+...ANT)",color:"var(--yel)"},{id:"participe",label:"✨ PARTICIPE ADJETIVO",color:"var(--blu)"}],
+    items:[
+      {w:"en parlant",     c:"gerondif",hint:"Gérondif = EN + participio. Expresión de modo o simultaneidad."},
+      {w:"parlant",        c:"participe",hint:"Participe solo = adjetivo. Ej: 'un homme parlant français'."},
+      {w:"en travaillant", c:"gerondif",hint:"EN travaillant = mientras trabaja (simultaneidad)."},
+      {w:"travaillant",    c:"participe",hint:"Participe = adjetivo modificando sustantivo."},
+      {w:"en lisant",      c:"gerondif",hint:"Gérondif = acción simultánea. 'En lisant le journal'."},
+      {w:"lisant",         c:"participe",hint:"Participe = adjetivo. 'Les enfants lisant la leçon'."},
+      {w:"en écrivant",    c:"gerondif",hint:"Gérondif con EN = manera o tiempo simultáneo."},
+      {w:"écrivant",       c:"participe",hint:"Participe = adjetivo en frase nominal."}
+    ]
+  },
+  {
+    sub:"Tipos de Negación · Ronda 4 de 9",
+    inst:"Clasifica cada estructura negativa según su tipo y significado.",
+    badge:"📚 Négation Complexe · Structuration",
+    cats:[{id:"simple",label:"⊘ SIMPLE (jamais/plus/rien)",color:"var(--grn)"},{id:"persona",label:"⊘ CON PERSONA (personne/aucun)",color:"var(--red)"}],
+    items:[
+      {w:"ne...jamais",   c:"simple", hint:"JAMAIS = nunca (en ningún momento). 'Je ne vais jamais au cinéma.'"},
+      {w:"ne...plus",     c:"simple", hint:"PLUS = ya no (cesación de acción). 'Il ne fume plus.'"},
+      {w:"ne...rien",     c:"simple", hint:"RIEN = nada (objeto). 'Je ne vois rien.'"},
+      {w:"personne ne...", c:"persona",hint:"PERSONNE = nadie (sujeto negativo). 'Personne ne vient.'"},
+      {w:"ne...aucun",    c:"persona",hint:"AUCUN(E) = ninguno/a (con nombre). 'Je n'ai aucun doute.'"},
+      {w:"ne...ni...ni",  c:"simple", hint:"NI...NI = ni...ni (coordinación negativa). 'Je n'aime ni le café ni le thé.'"},
+      {w:"sans",          c:"simple", hint:"SANS = sin (preposición negativa). 'Faire quelque chose sans parler.'"},
+      {w:"aucun ne...",   c:"persona",hint:"AUCUN en posición sujeto. 'Aucun ne partira avant 18h.'"}
+    ]
+  },
+  {
+    sub:"Voix Passive vs Active · Ronda 5 de 9",
+    inst:"Separa verbos en voz activa de la voz pasiva (ÊTRE + participio).",
+    badge:"📚 Voix Passive · Transformations",
+    cats:[{id:"active",label:"➜ VOZ ACTIVA",color:"var(--grn)"},{id:"passive",label:"⬅ VOZ PASIVA",color:"var(--red)"}],
+    items:[
+      {w:"Le réalisateur tourne le film",      c:"active", hint:"Sujeto ACTIVO hace la acción. Structure SVO normal."},
+      {w:"Le film est tourné par le réalisateur", c:"passive",hint:"Voix passive = ÊTRE + participio. Le sujet reçoit l'action."},
+      {w:"La critéra évalue les candidats",    c:"active", hint:"Sujeto ACTIVO. 'Les candidats' = COD/objeto."},
+      {w:"Les candidats sont évalués",         c:"passive",hint:"Voix passive sans 'par'. Le sujet reçoit l'action."},
+      {w:"Nous organisons le festival",        c:"active", hint:"VOZ ACTIVA. Sujeto NOSOTROS hace la acción."},
+      {w:"Le festival est organisé par nous",  c:"passive",hint:"VOZ PASIVA. Le festival reçoit l'action."},
+      {w:"L'écrivain crée ses personnages",    c:"active", hint:"VOZ ACTIVA. L'écrivain = sujet agente."},
+      {w:"Les personnages sont créés",         c:"passive",hint:"VOZ PASIVA simple (sans agent explicite)."}
+    ]
+  },
+  {
+    sub:"Subjonctif vs Indicatif · Ronda 6 de 9",
+    inst:"Clasifica los verbos según requieran SUBJONCTIF o INDICATIF.",
+    badge:"📚 Modes Verbaux · Subjonctif",
+    cats:[{id:"subj",label:"🎯 SUBJONCTIF",color:"var(--blu)"},{id:"ind",label:"✓ INDICATIF",color:"var(--grn)"}],
+    items:[
+      {w:"Je veux que tu...",    c:"subj", hint:"'VOULOIR que' → SUBJONCTIF obligatoire."},
+      {w:"Je sais qu'il...",     c:"ind",  hint:"'SAVOIR que' → INDICATIF. Certitude."},
+      {w:"Il faut que vous...",  c:"subj", hint:"'IL FAUT que' → SUBJONCTIF. Obligation/nécessité."},
+      {w:"Je crois qu'elle...",  c:"ind",  hint:"'CROIRE que' (affirmatif) → INDICATIF."},
+      {w:"Je doute qu'il...",    c:"subj", hint:"'DOUTER que' → SUBJONCTIF. Duda."},
+      {w:"C'est clair qu'il...", c:"ind",  hint:"'C'EST CLAIR que' → INDICATIF. Evidencia."},
+      {w:"Pourvu que ça...",     c:"subj", hint:"'POURVU QUE' → SUBJONCTIF. Esperanza/deseo."},
+      {w:"Il paraît qu'on...",   c:"ind",  hint:"'IL PARAÎT que' → INDICATIF. Información."}
+    ]
+  },
+  {
+    sub:"Nominalización: Verbo → Sustantivo · Ronda 7 de 9",
+    inst:"Separa los verbos en infinitivo de sus nominalizaciones (sustantivos derivados).",
+    badge:"📚 Nominalisation · Suffixes (-tion, -ance, -ment)",
+    cats:[{id:"verbe",label:"▶ INFINITIF (verbo)",color:"var(--blu)"},{id:"nom",label:"● SUSTANTIVO",color:"var(--grn)"}],
+    items:[
+      {w:"transformer",    c:"verbe",hint:"Verbo infinitivo = TRANSFORMER (hacer cambios)."},
+      {w:"transformation", c:"nom", hint:"Sustantivo = TRANSFORMATION. Sufijo -TION."},
+      {w:"développer",     c:"verbe",hint:"DÉVELOPPER = crecer, desarrollar (verbo)."},
+      {w:"développement",  c:"nom", hint:"DÉVELOPPEMENT = desarrollo. Sufijo -MENT."},
+      {w:"réserver",       c:"verbe",hint:"RÉSERVER = booking (verbo de acción)."},
+      {w:"réservation",    c:"nom", hint:"RÉSERVATION = reserva. Sufijo -TION."},
+      {w:"évaluer",        c:"verbe",hint:"ÉVALUER = evaluar (verbo de acción)."},
+      {w:"évaluation",     c:"nom", hint:"ÉVALUATION = evaluación. Sufijo -TION."}
+    ]
+  },
+  {
+    sub:"Acuerdo de Adjetivos · Ronda 8 de 9",
+    inst:"Clasifica los adjetivos según su género y número.",
+    badge:"📚 Accord des Adjectifs · Genre/Nombre",
+    cats:[{id:"masc_sing",label:"🔵 MASC. SING.",color:"var(--blu)"},{id:"fem_sing",label:"🩷 FÉM. SING.",color:"var(--red)"}],
+    items:[
+      {w:"un film intéressant",     c:"masc_sing",hint:"Adjetivo MASCULINO SINGULAR."},
+      {w:"une ville intéressante",  c:"fem_sing", hint:"Adjetivo FEMENINO SINGULAR (-e al final)."},
+      {w:"un paysage beau",         c:"masc_sing",hint:"BEAU (masc.) = hermoso."},
+      {w:"une femme belle",         c:"fem_sing", hint:"BELLE (fém.) = hermosa. Cambio radical: beau→belle."},
+      {w:"un homme sérieux",        c:"masc_sing",hint:"SÉRIEUX = serio (masc.)."},
+      {w:"une réponse sérieuse",    c:"fem_sing", hint:"SÉRIEUSE = seria (fém., sufijo -EUSE)."},
+      {w:"un travail difficile",    c:"masc_sing",hint:"DIFFICILE = difícil (masc.)."},
+      {w:"une tâche difficile",     c:"fem_sing", hint:"DIFFICILE = difícil (fém.). Adjetivo invariable que termina en -E."}
+    ]
+  },
+  {
+    sub:"Pronombres Relativos · Ronda 9 de 9",
+    inst:"Clasifica los pronombres relativos según su función gramatical.",
+    badge:"📚 Pronoms Relatifs · qui/que/dont/où",
+    cats:[{id:"suj",label:"▬ SUJETO (qui)",color:"var(--blu)"},{id:"cod",label:"▬ COD (que)",color:"var(--grn)"}],
+    items:[
+      {w:"qui",   c:"suj", hint:"QUI = sujeto de la proposición relativa. 'L'homme qui parle' (el hombre que habla)."},
+      {w:"que",   c:"cod", hint:"QUE = complemento de objeto directo. 'Le film que j'ai vu' (la película que vi)."},
+      {w:"dont",  c:"cod", hint:"DONT = complemento de la proposición. 'Le livre dont je te parle' (el libro del cual te hablo)."},
+      {w:"où",    c:"suj", hint:"OÙ = adverbio relativo de lugar. 'La ville où j'habite' (la ciudad donde vivo)."},
+      {w:"ce qui", c:"suj",hint:"CE QUI = lo que (sujeto en proposición principal). 'Ce qui me plaît' (lo que me gusta)."},
+      {w:"ce que", c:"cod",hint:"CE QUE = lo que (COD en proposición principal). 'Ce que je vois' (lo que veo)."},
+      {w:"lequel", c:"suj",hint:"LEQUEL = pronombre relativo de objeto. 'La personne avec laquelle je travaille' (la persona con la cual trabajo)."},
+      {w:"laquelle",c:"cod",hint:"LAQUELLE = forma femenina de lequel. Puede ser sujeto o COD según contexto."}
     ]
   }
 ];
@@ -710,254 +838,153 @@ const G1_ROUNDS = [
 /* ─────────────────────────────────────────────
    GAME 1 LOGIC
 ───────────────────────────────────────────── */
-const G1 = {
-  round: 0,
-  score: 0,
-  dragEl: null,
-  errors: [],
+const G1={
+  round:0,score:0,dragEl:null,errors:[],
 
-  start() {
-    this.round = 0; this.score = 0; this.errors = []; this.dragEl = null;
-    showSection('sec-g1');
-    this.render();
-  },
+  start(){this.round=0;this.score=0;this.errors=[];this.dragEl=null;showSection('sec-g1');this.render();},
 
-  render() {
-    const rd = G1_ROUNDS[this.round];
-    document.getElementById('g1-sub').textContent = rd.sub;
-    document.getElementById('g1-inst').textContent = rd.inst;
-    document.getElementById('g1-badge').textContent = rd.badge;
-    document.getElementById('g1-score').textContent = this.score;
+  render(){
+    const rd=G1_ROUNDS[this.round];
+    document.getElementById('g1-sub').textContent=rd.sub;
+    document.getElementById('g1-inst').textContent=rd.inst;
+    document.getElementById('g1-badge').textContent=rd.badge;
+    document.getElementById('g1-score').textContent=this.score;
+    document.getElementById('g1-dots').innerHTML=G1_ROUNDS.map((_,i)=>
+      `<div class="dot ${i===this.round?'dot-on':i<this.round?'dot-done':''}"></div>`).join('');
 
-    const dotsEl = document.getElementById('g1-dots');
-    dotsEl.innerHTML = G1_ROUNDS.map((_,i)=>
-      `<div class="dot ${i===this.round?'dot-on':i<this.round?'dot-done':''}"></div>`
+    const bank=document.getElementById('g1-bank');
+    bank.innerHTML=shuffle(rd.items).map(it=>
+      `<div class="drag-chip" draggable="true" data-word="${it.w}" data-correct="${it.c}"
+        style="padding:.6rem 1.05rem;border-radius:.65rem;font-size:1rem;font-family:'Exo 2',sans-serif;font-weight:700"
+        ondragstart="G1.ds(event,this)" ondragend="G1.de(event,this)">${it.w}</div>`
     ).join('');
+    /* ← Adjuntar touch drag a cada chip nuevo */
+    bank.querySelectorAll('.drag-chip').forEach(chip=>addTouchDrag(chip));
 
-    const bank = document.getElementById('g1-bank');
-    bank.innerHTML = shuffle(rd.items).map(it =>
-      `<div class="drag-chip"
-        draggable="true"
-        data-word="${it.w}"
-        data-correct="${it.c}"
-        style="padding:.45rem .9rem;border-radius:.55rem;font-size:.95rem;font-family:'Exo 2',sans-serif;font-weight:600"
-        ondragstart="G1.ds(event,this)"
-        ondragend="G1.de(event,this)">${it.w}</div>`
-    ).join('');
-
-    const zonesEl = document.getElementById('g1-zones');
-    zonesEl.innerHTML = rd.cats.map(cat =>
-      `<div class="drop-zone"
-        data-zone="${cat.id}"
-        style="border-color:${cat.color}25;background:${cat.color}06;padding:.85rem"
-        ondragover="g1Over(event,this)"
-        ondragleave="g1Leave(event,this)"
-        ondrop="g1Drop(event,this)">
-        <div class="exo" style="font-size:.82rem;font-weight:700;color:${cat.color};text-align:center;margin-bottom:.6rem">${cat.label}</div>
-        <div class="chips-area" style="display:flex;flex-wrap:wrap;gap:.45rem;min-height:60px"></div>
+    document.getElementById('g1-zones').innerHTML=rd.cats.map(cat=>
+      `<div class="drop-zone" data-zone="${cat.id}"
+        style="border-color:${cat.color}30;background:${cat.color}07;padding:.85rem"
+        ondragover="g1Over(event,this)" ondragleave="g1Leave(event,this)" ondrop="g1Drop(event,this)">
+        <div class="exo" style="font-size:.92rem;font-weight:700;color:${cat.color};text-align:center;margin-bottom:.65rem">${cat.label}</div>
+        <div class="chips-area" style="display:flex;flex-wrap:wrap;gap:.5rem;min-height:64px"></div>
       </div>`
     ).join('');
   },
 
-  ds(e, el) {
-    this.dragEl = el;
-    e.dataTransfer.setData('text/plain', el.dataset.word);
-    setTimeout(() => el.classList.add('dragging'), 0);
-  },
+  ds(e,el){this.dragEl=el;e.dataTransfer.setData('text/plain',el.dataset.word);setTimeout(()=>el.classList.add('dragging'),0);},
+  de(e,el){el.classList.remove('dragging');},
 
-  de(e, el) {
-    el.classList.remove('dragging');
-  },
-
-  drop(e, zone) {
+  drop(e,zone){
     e.preventDefault();
     zone.classList.remove('over');
-    const el = this.dragEl;
-    if (!el) return;
+    const el=this.dragEl;
+    if(!el)return;
     el.classList.remove('ok','err');
-    el.style.borderColor = ''; el.style.background = ''; el.style.color = '';
-    const area = zone.querySelector('.chips-area') || zone;
+    el.style.borderColor='';el.style.background='';el.style.color='';
+    const area=zone.querySelector('.chips-area')||zone;
     area.appendChild(el);
+    addTouchDrag(el); /* re-bind tras mover nodo */
   },
 
-  check() {
-    const rd = G1_ROUNDS[this.round];
-    const roundErrors = [];
-    let correct = 0;
-
-    rd.items.forEach(it => {
-      const chip = document.querySelector(`[data-word="${it.w}"]`);
-      if (!chip) return;
-      const zoneEl = chip.closest('[data-zone]');
-      const zid = zoneEl ? zoneEl.dataset.zone : 'bank';
-
-      if (zid === it.c) {
-        correct++;
-        chip.classList.add('ok');
-        chip.classList.add('pop-in');
-      } else {
-        chip.classList.add('err');
-        chip.classList.add('shake');
-        setTimeout(() => chip.classList.remove('shake'), 500);
-        const ccat = rd.cats.find(c => c.id === it.c);
-        roundErrors.push({ w: it.w, got: zid, need: ccat ? ccat.label : it.c, hint: it.hint });
+  check(){
+    const rd=G1_ROUNDS[this.round];
+    const errs=[];let ok=0;
+    rd.items.forEach(it=>{
+      const chip=document.querySelector(`[data-word="${it.w}"]`);
+      if(!chip)return;
+      const zid=(chip.closest('[data-zone]')||{}).dataset?.zone||'bank';
+      if(zid===it.c){ok++;chip.classList.add('ok','pop-in');}
+      else{
+        chip.classList.add('err','shake');
+        setTimeout(()=>chip.classList.remove('shake'),500);
+        errs.push({w:it.w,hint:it.hint});
       }
     });
-
-    this.errors.push(...roundErrors);
-    const pts = correct * 10;
-    this.score += pts;
-    addPts(pts);
-    document.getElementById('g1-score').textContent = this.score;
-
-    setTimeout(() => this.showModal(correct, rd.items.length, roundErrors), 550);
+    this.errors.push(...errs);
+    const pts=ok*10;this.score+=pts;addPts(pts);
+    document.getElementById('g1-score').textContent=this.score;
+    setTimeout(()=>this.showModal(ok,rd.items.length,errs),550);
   },
 
-  showModal(correct, total, errors) {
-    const isLast = this.round >= G1_ROUNDS.length - 1;
-    const pct = Math.round(correct / total * 100);
-    const col = pct >= 80 ? 'var(--grn)' : pct >= 50 ? 'var(--yel)' : 'var(--red)';
-    const emoji = pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '💪';
-
-    document.getElementById('g1-m-title').textContent = `${emoji} ${correct}/${total} correctos — ${pct}%`;
-    document.getElementById('g1-m-title').style.color = col;
-
-    document.getElementById('g1-m-score').innerHTML =
-      `<div class="exo" style="font-size:2.6rem;font-weight:900;color:${col}">+${correct*10} pts</div>
-       <div style="font-size:.85rem;color:var(--tx2);margin-top:.2rem">Score acumulado: ${this.score}</div>`;
-
-    const eEl = document.getElementById('g1-m-errors');
-    eEl.innerHTML = errors.length === 0
-      ? `<div style="text-align:center;padding:1rem;color:var(--grn)">🎉 ¡Ronda perfecta! Sin errores.</div>`
-      : `<p class="exo" style="font-size:.8rem;font-weight:700;color:var(--yel);margin-bottom:.25rem">📝 REVISIÓN:</p>
-         ${errors.map(e=>`
-          <div style="background:var(--red10);border:1px solid rgba(255,77,109,.2);border-radius:.7rem;padding:.85rem;font-size:.83rem">
-            <div style="font-weight:700;color:var(--red);font-family:'Exo 2',sans-serif">« ${e.w} »</div>
-            <div style="color:var(--tx2);margin-top:.2rem">💡 ${e.hint}</div>
-          </div>`).join('')}`;
-
-    const btn = document.getElementById('g1-m-next');
-    if (isLast) {
-      btn.textContent = '🏁 Ver Resumen Final';
-      btn.onclick = () => this.finalSummary();
-    } else {
-      btn.textContent = '▶ Siguiente Ronda';
-      btn.onclick = () => {
-        this.round++;
-        document.getElementById('g1-modal').classList.add('hidden');
-        this.render();
-      };
-    }
+  showModal(ok,total,errs){
+    const last=this.round>=G1_ROUNDS.length-1;
+    const pct=Math.round(ok/total*100);
+    const col=pct>=80?'var(--grn)':pct>=50?'var(--yel)':'var(--red)';
+    const emo=pct>=80?'🏆':pct>=50?'👍':'💪';
+    document.getElementById('g1-m-title').textContent=`${emo} ${ok}/${total} correctos — ${pct}%`;
+    document.getElementById('g1-m-title').style.color=col;
+    document.getElementById('g1-m-score').innerHTML=
+      `<div class="exo" style="font-size:2.8rem;font-weight:900;color:${col}">+${ok*10} pts</div>
+       <div style="font-size:.95rem;color:var(--tx2);margin-top:.2rem">Score acumulado: ${this.score}</div>`;
+    document.getElementById('g1-m-errors').innerHTML=errs.length===0
+      ?`<div style="text-align:center;padding:1rem;color:var(--grn)">🎉 ¡Ronda perfecta!</div>`
+      :`<p class="exo" style="font-size:.9rem;font-weight:700;color:var(--yel);margin-bottom:.3rem">📝 REVISIÓN:</p>
+        ${errs.map(e=>`<div style="background:var(--red10);border:1px solid rgba(255,77,109,.2);border-radius:.75rem;padding:.85rem;font-size:.92rem">
+          <div style="font-weight:700;color:var(--red);font-family:'Exo 2',sans-serif">« ${e.w} »</div>
+          <div style="color:var(--tx2);margin-top:.25rem">💡 ${e.hint}</div></div>`).join('')}`;
+    const btn=document.getElementById('g1-m-next');
+    if(last){btn.textContent='🏁 Ver Resumen Final';btn.onclick=()=>this.finalSummary();}
+    else{btn.textContent='▶ Siguiente Ronda';btn.onclick=()=>{this.round++;document.getElementById('g1-modal').classList.add('hidden');this.render();};}
     document.getElementById('g1-modal').classList.remove('hidden');
   },
 
-  finalSummary() {
-    const total = G1_ROUNDS.reduce((s,r) => s+r.items.length, 0);
-    const correct = this.score / 10;
-    const pct = Math.round(correct / total * 100);
-    const col = pct >= 80 ? 'var(--grn)' : pct >= 50 ? 'var(--yel)' : 'var(--red)';
-
-    document.getElementById('g1-m-title').textContent = '🏁 RÉSUMÉ FINAL — Le Tri Cognitif';
-    document.getElementById('g1-m-title').style.color = 'var(--grn)';
-
-    document.getElementById('g1-m-score').innerHTML = `
+  finalSummary(){
+    const total=G1_ROUNDS.reduce((s,r)=>s+r.items.length,0);
+    const ok=this.score/10;const pct=Math.round(ok/total*100);
+    const col=pct>=80?'var(--grn)':pct>=50?'var(--yel)':'var(--red)';
+    document.getElementById('g1-m-title').textContent='🏁 RÉSUMÉ FINAL';
+    document.getElementById('g1-m-title').style.color='var(--grn)';
+    document.getElementById('g1-m-score').innerHTML=`
       <div class="exo" style="font-size:3rem;font-weight:900;color:${col}">${pct}%</div>
-      <div style="color:var(--tx2);margin-bottom:1rem">${correct}/${total} correctos · ${this.score} pts</div>
-      <div style="background:var(--card);border:1px solid var(--brd);border-radius:.85rem;padding:1rem;text-align:left;font-size:.83rem;line-height:1.65">
+      <div style="color:var(--tx2);margin-bottom:1rem;font-size:.95rem">${ok}/${total} correctos · ${this.score} pts</div>
+      <div style="background:var(--card);border:1px solid var(--brd);border-radius:.9rem;padding:1rem;text-align:left;font-size:.92rem;line-height:1.7">
         <p style="color:var(--grn);font-weight:700;margin-bottom:.5rem">🧠 RAPPEL GRAMMATICAL:</p>
-        <p style="color:var(--tx2)">
-          Los verbos que usan <strong style="color:var(--blu)">ÊTRE</strong> son los de la «maison d'être»: <em>aller, venir, partir, naître, mourir, rester, tomber, entrer/sortir, monter/descendre, arriver/partir, rentrer</em> — y todos los <strong>verbos pronominales</strong>.<br><br>
-          Con ÊTRE, el participe passé <strong style="color:var(--grn)">concuerda en género y número</strong> con el sujeto:<br>
-          <em>Elle est partie · Ils sont venus · Nous sommes allées</em>
-        </p>
+        <p style="color:var(--tx2)">Verbos con <strong style="color:var(--blu)">ÊTRE</strong>: <em>aller, venir, partir, naître, mourir, rester, tomber, entrer, sortir, monter, descendre, arriver, rentrer</em> + verbos pronominales.<br><br>
+        El participe passé <strong style="color:var(--grn)">concuerda con el sujeto</strong>:<br>
+        <em>Elle est partie · Ils sont venus · Nous sommes allées</em></p>
       </div>`;
-
-    const eEl = document.getElementById('g1-m-errors');
-    eEl.innerHTML = this.errors.length === 0
-      ? `<div style="text-align:center;color:var(--grn)">🎉 ¡Cero errores en ambas rondas! Dominio excelente.</div>`
-      : this.errors.map(e=>`
-          <div style="background:var(--red10);border:1px solid rgba(255,77,109,.2);border-radius:.7rem;padding:.7rem;font-size:.82rem">
-            <div style="font-weight:700;color:var(--red);font-family:'Exo 2',sans-serif">« ${e.w} »</div>
-            <div style="color:var(--tx2);margin-top:.2rem">💡 ${e.hint}</div>
-          </div>`).join('');
-
-    document.getElementById('g1-m-next').textContent = '▶ REJUGAR';
-    document.getElementById('g1-m-next').onclick = () => startGame1();
+    document.getElementById('g1-m-errors').innerHTML=this.errors.length===0
+      ?`<div style="text-align:center;color:var(--grn);font-size:.95rem">🎉 ¡Cero errores!</div>`
+      :this.errors.map(e=>`<div style="background:var(--red10);border:1px solid rgba(255,77,109,.2);border-radius:.75rem;padding:.8rem;font-size:.92rem">
+          <div style="font-weight:700;color:var(--red);font-family:'Exo 2',sans-serif">« ${e.w} »</div>
+          <div style="color:var(--tx2);margin-top:.25rem">💡 ${e.hint}</div></div>`).join('');
+    document.getElementById('g1-m-next').textContent='▶ REJUGAR';
+    document.getElementById('g1-m-next').onclick=()=>startGame1();
   },
-
-  closeModal() {
-    document.getElementById('g1-modal').classList.add('hidden');
-  }
+  closeModal(){document.getElementById('g1-modal').classList.add('hidden');}
 };
 
-/* Drag event helpers (inline-handler friendly) */
-function g1Over(e, zone) { e.preventDefault(); zone.classList.add('over'); }
-function g1Leave(e, zone) { if (!zone.contains(e.relatedTarget)) zone.classList.remove('over'); }
-function g1Drop(e, zone) { G1.drop(e, zone); }
-function startGame1() { document.getElementById('g1-modal').classList.add('hidden'); G1.start(); }
-function checkG1() { G1.check(); }
-function resetG1() { G1.render(); }
+function g1Over(e,z){e.preventDefault();z.classList.add('over');}
+function g1Leave(e,z){if(!z.contains(e.relatedTarget))z.classList.remove('over');}
+function g1Drop(e,z){G1.drop(e,z);}
+function startGame1(){document.getElementById('g1-modal').classList.add('hidden');G1.start();}
+function checkG1(){G1.check();}
+function resetG1(){G1.render();}
 
 /* ─────────────────────────────────────────────
    GAME 2 DATA
 ───────────────────────────────────────────── */
-const G2_DATA = [
-  {
-    q: "Depuis son régime, elle ne mange ___ de sucre.",
-    opts: ["jamais","plus","rien","personne"],
-    ans: 1,
-    topic: "Négation: NE...PLUS",
-    expl: "NE...PLUS exprime la cessation d'une action habituelle. Avant: elle mangeait du sucre → Maintenant: elle n'en mange PLUS. Differ de JAMAIS (= n'a jamais eu lieu) et RIEN (= pas d'objet du tout)."
-  },
-  {
-    q: "Il n'y a ___ de problème dans ce dossier.",
-    opts: ["rien","personne","aucun","jamais"],
-    ans: 2,
-    topic: "Négation: NE...AUCUN(E)",
-    expl: "NE...AUCUN + nom nie l'existence totale: zéro problème. AUCUN s'accorde: aucune question (fém.), aucun doute (masc.). Synonyme renforcé de 'ne...pas de'."
-  },
-  {
-    q: "___ ne comprend vraiment cette règle de grammaire !",
-    opts: ["Rien","Jamais","Personne","Aucun"],
-    ans: 2,
-    topic: "Négation: PERSONNE NE...",
-    expl: "Quand l'élément négatif est SUJET, il se place en tête: PERSONNE NE... / RIEN NE... / AUCUN NE... Le NE reste devant le verbe. Ex: 'Rien ne va plus.'"
-  },
-  {
-    q: "Il a décidé de ne ___ dire à sa famille pour l'instant.",
-    opts: ["pas","rien","jamais","plus"],
-    ans: 0,
-    topic: "Négation avec l'Infinitif",
-    expl: "NE PAS + infinitif: les deux particules se placent ENSEMBLE avant l'infinitif: 'de ne pas dire', 'de ne rien faire', 'de ne plus partir'. Jamais séparées autour de l'infinitif!"
-  },
-  {
-    q: "L'film 'La Zone d'Intérêt' a été ___ par le jury de Cannes.",
-    opts: ["récompensé","récompense","récompenser","récompensait"],
-    ans: 0,
-    topic: "Voix Passive — Accord",
-    expl: "VOIX PASSIVE = ÊTRE + participe passé accordé avec le SUJET. 'Le film' (masc. sing.) → récompensé. Si sujet féminin: 'La pièce a été récompensée'. Si pluriel: 'Les films ont été récompensés'."
-  },
-  {
-    q: "Bien qu'elle ___ fatiguée, elle veut continuer à travailler.",
-    opts: ["est","soit","était","sera"],
-    ans: 1,
-    topic: "Subjonctif — Concession",
-    expl: "BIEN QUE + SUBJONCTIF obligatoire dans la subordonnée. La proposition principale garde l'indicatif (veut). Autres conjonctions → subjonctif: pour que, afin que, avant que, bien que, quoique, à moins que."
-  },
-  {
-    q: "Il a amélioré son niveau de français ___ des films en VO.",
-    opts: ["en regardant","regardant","qu'il regardait","pour regarder"],
-    ans: 0,
-    topic: "Le Gérondif",
-    expl: "GÉRONDIF = EN + participe présent (-ant). Exprime la SIMULTANÉITÉ ou la MANIÈRE. 'En regardant' = pendant qu'il regardait / grâce au fait de regarder. Le sujet des deux verbes doit être IDENTIQUE."
-  },
-  {
-    q: "Le terme 'blogosphère' désigne...",
-    opts: ["un blog très populaire","l'ensemble des blogs sur internet","une app de podcasts","un réseau d'entreprise"],
-    ans: 1,
-    topic: "Vocabulaire: Technologie & Médias",
-    expl: "BLOGOSPHÈRE (fém.) = néologisme désignant l'ensemble de tous les blogs sur internet, formant une communauté virtuelle. Formé de 'blog' + '-sphère' (suffixe indiquant un domaine, comme 'atmosphère', 'biosphère')."
-  }
+const G2_DATA=[
+  {q:"Depuis son régime, elle ne mange ___ de sucre.",opts:["jamais","plus","rien","personne"],ans:1,topic:"Négation: NE...PLUS",
+   expl:"NE...PLUS = cessation d'une action habituelle. Avant: elle mangeait du sucre. Maintenant: elle n'en mange PLUS."},
+  {q:"Il n'y a ___ de problème dans ce dossier.",opts:["rien","personne","aucun","jamais"],ans:2,topic:"Négation: NE...AUCUN(E)",
+   expl:"NE...AUCUN + nom nie l'existence totale. AUCUN s'accorde: aucune question (fém.), aucun doute (masc.)."},
+  {q:"___ ne comprend vraiment cette règle de grammaire !",opts:["Rien","Jamais","Personne","Aucun"],ans:2,topic:"Négation: PERSONNE NE...",
+   expl:"Élément négatif en position SUJET → en tête: PERSONNE NE... / RIEN NE... Le NE reste devant le verbe."},
+  {q:"Il a décidé de ne ___ dire à sa famille pour l'instant.",opts:["pas","rien","jamais","plus"],ans:0,topic:"Négation + Infinitif",
+   expl:"NE PAS + infinitif: les deux particules se placent ENSEMBLE avant l'infinitif: 'de ne pas dire', 'de ne rien faire'."},
+  {q:"Le film 'La Zone d'Intérêt' a été ___ par le jury de Cannes.",opts:["récompensé","récompense","récompenser","récompensait"],ans:0,topic:"Voix Passive",
+   expl:"ÊTRE + participe passé accordé avec le SUJET. 'Le film' (masc. sing.) → récompensé. Féminin: récompensée."},
+  {q:"Bien qu'elle ___ fatiguée, elle veut continuer à travailler.",opts:["est","soit","était","sera"],ans:1,topic:"Subjonctif — Concession",
+   expl:"BIEN QUE + SUBJONCTIF obligatoire. La principale garde l'indicatif. Autres: pour que, afin que, avant que."},
+  {q:"Il a amélioré son français ___ des films en VO.",opts:["en regardant","regardant","qu'il regardait","pour regarder"],ans:0,topic:"Le Gérondif",
+   expl:"GÉRONDIF = EN + participe présent (-ant). Exprime la simultanéité ou la manière. Sujet identique aux deux verbes."},
+  {q:"Le terme 'blogosphère' désigne...",opts:["un blog populaire","l'ensemble des blogs sur internet","une app de podcasts","un réseau d'entreprise"],ans:1,topic:"Vocabulaire: Technologie & Médias",
+   expl:"BLOGOSPHÈRE (fém.) = l'ensemble de tous les blogs sur internet. Formé de 'blog' + '-sphère' (domaine)."},
+  {q:"Je veux que tu ___ cette lettre avant demain.",opts:["écris","écrive","écrivais","écriveras"],ans:1,topic:"Subjonctif — Volonté",
+   expl:"'Je veux que' → SUBJONCTIF obligatoire. TU → tu écrives (subjonctif présent 2ème personne)."},
+  {q:"L'écotourisme favorise ___ entre les communautés locales et les visiteurs.",opts:["l'échange","l'échangement","l'échanger","l'échangeant"],ans:0,topic:"Nominalisation — Verbo → Sustantivo",
+   expl:"NOMINALISATION: l'échange (sustantivo) de l'infinitivo ÉCHANGER. Sufijo zéro o -age. Crucial en prensa/blogs."}
 ];
 
 /* ─────────────────────────────────────────────
@@ -965,12 +992,12 @@ const G2_DATA = [
 ───────────────────────────────────────────── */
 const G2 = {
   qi: 0, score: 0, streak: 0,
-  timer: null, timerVal: 13, elapsed: 0,
+  timer: null, timerVal: 14, elapsed: 0,
   errors: [], answered: false,
 
   start() {
     if (this.timer) clearInterval(this.timer);
-    Object.assign(this, { qi:0, score:0, streak:0, timer:null, timerVal:13, elapsed:0, errors:[], answered:false });
+    Object.assign(this, { qi:0, score:0, streak:0, timer:null, timerVal:14, elapsed:0, errors:[], answered:false });
     document.getElementById('g2-qt').textContent = G2_DATA.length;
     document.getElementById('g2-modal').classList.add('hidden');
     document.getElementById('g2-fb').classList.add('hidden');
@@ -1110,7 +1137,7 @@ const G2 = {
             <div style="font-weight:600;color:var(--tx1);margin-bottom:.3rem">${e.q}</div>
             <div><span style="color:var(--red)">✗ Tu: ${e.got}</span> → <span style="color:var(--grn)">✓ ${e.need}</span></div>
             <div style="color:var(--tx2);margin-top:.35rem">${e.expl}</div>
-            <div style="margin-top:.4rem"><span style="font-size:.82rem;padding:.2rem .6rem;border-radius:.35rem;background:var(--blu10);color:var(--blu)">${e.topic}</span></div>
+            <div style="margin-top:.4rem"><span style="font-size:.72rem;padding:.2rem .6rem;border-radius:.35rem;background:var(--blu10);color:var(--blu)">${e.topic}</span></div>
           </div>`).join('')}`;
 
     document.getElementById('g2-modal').classList.remove('hidden');
@@ -1122,75 +1149,67 @@ function startGame2() { G2.start(); }
 /* ─────────────────────────────────────────────
    GAME 3 DATA
 ───────────────────────────────────────────── */
-const G3_STEPS = [
-  {
-    npc: "Bonjour et bienvenue à l'Agence Voyages Verts ! Que puis-je faire pour vous aujourd'hui ?",
-    opts: [
-      { t:"Je voudrais réserver un séjour éco-touristique, s'il vous plaît.",
-        ok:true,
-        fb:"✓ Parfait ! 'Je voudrais' + infinitif est la formule idéale pour une demande polie en registre formel B2/C1. Conditionnel de politesse obligatoire.",
-        tag:"Demande formelle · Conditionnel" },
-      { t:"Donnez-moi vos brochures maintenant !",
-        ok:false,
-        fb:"✗ L'impératif direct sans adoucissement est brusque en contexte formel. Préférez: 'Pourriez-vous me donner...' ou 'Je souhaiterais consulter...'",
-        tag:"Impératif inapproprié" },
-      { t:"Je veux aller quelque part, je sais pas où.",
-        ok:false,
-        fb:"✗ Double problème: registre oral ('je sais pas' = élision fautive) et manque de précision. En B2+: 'Je suis à la recherche d'un séjour...'",
-        tag:"Registre oral / Imprécision" }
-    ]
-  },
-  {
-    npc: "Excellent choix ! Le tourisme durable est notre spécialité. Avez-vous une destination en tête ?",
-    opts: [
-      { t:"N'importe où, ça m'est égal.",
-        ok:false,
-        fb:"✗ Cette réponse passive ne fait pas avancer la conversation. Il faut exprimer une PRÉFÉRENCE pour guider l'interlocuteur — compétence évaluée à l'oral DELF.",
-        tag:"Manque d'initiative communicative" },
-      { t:"Je suggère que vous me proposiez quelque chose en montagne, si possible.",
-        ok:true,
-        fb:"✓ Excellent ! 'Je suggère que' + SUBJONCTIF (proposiez). Structure parfaite B2 pour formuler une suggestion polie. Subjonctif obligatoire après 'suggérer que'.",
-        tag:"Suggérer · Subjonctif présent" },
-      { t:"La montagne, ça me plaît bien.",
-        ok:false,
-        fb:"✗ Contenu correct mais registre trop informel. En C1: 'J'aurais une préférence pour un cadre montagnard' ou 'Je pencherais plutôt pour les Alpes'.",
-        tag:"Registre informel insuffisant" }
-    ]
-  },
-  {
-    npc: "Parfait ! Que pensez-vous de notre offre 'Alpes Vertes' ? Elle comprend hébergement bio, randonnées guidées et ateliers d'écologie.",
-    opts: [
-      { t:"C'est trop cher. Autre chose ?",
-        ok:false,
-        fb:"✗ Le prix n'a pas encore été mentionné ! Réagissez d'abord au contenu de l'offre. La COHÉRENCE DISCURSIVE est un critère clé au DELF — répondre hors propos est pénalisé.",
-        tag:"Incohérence discursive" },
-      { t:"Je trouve que c'est une initiative écologique vraiment intéressante ! Je suis tout à fait convaincu(e).",
-        ok:true,
-        fb:"✓ Bravo ! 'Je trouve que' + INDICATIF pour exprimer une opinion (≠ subjonctif). 'Tout à fait convaincu(e)' = registre soutenu. Exprimer sa satisfaction: compétence pragmatique DELF B2.",
-        tag:"Donner son opinion · Indicatif" },
-      { t:"Mouais, pas mal...",
-        ok:false,
-        fb:"✗ Expression vague et familière ('mouais'). Pour un enthousiasme mesuré en B2: 'Cela semble prometteur, bien que...' ou 'C'est une offre intéressante, même si...'",
-        tag:"Expression vague · Registre familier" }
-    ]
-  },
-  {
-    npc: "Je suis ravie que cela vous plaise ! Souhaitez-vous que je procède à la réservation pour deux personnes ?",
-    opts: [
-      { t:"Faites comme vous voulez.",
-        ok:false,
-        fb:"✗ Cette réponse abdique la prise de décision. Soyez assertif(ve) ! Confirmez ou précisez les conditions avec une formule appropriée.",
-        tag:"Passivité communicative" },
-      { t:"Oui, je voudrais que vous fassiez la réservation pour deux adultes, s'il vous plaît.",
-        ok:true,
-        fb:"✓ PARFAIT ! 'Je voudrais que' + SUBJONCTIF ('fassiez'). Structure obligatoire pour exprimer une volonté polie. 'Faire' → subjonctif: 'fasse/fasses/fasse/fassions/fassiez/fassent'.",
-        tag:"Exprimer la volonté · Subjonctif" },
-      { t:"Oui, pour deux. Merci.",
-        ok:false,
-        fb:"✗ Fonctionnel mais insuffisant pour B2/C1. La version avec 'je voudrais que + subjonctif' démontre une vraie maîtrise morphosyntaxique qui valorise votre dossier.",
-        tag:"Niveau insuffisant B2/C1" }
-    ]
-  }
+const G3_STEPS=[
+  {npc:"Bonjour et bienvenue à l'Agence Voyages Verts ! Que puis-je faire pour vous aujourd'hui ?",
+   opts:[
+    {t:"Je voudrais réserver un séjour éco-touristique, s'il vous plaît.",ok:true,fb:"✓ Parfait ! 'Je voudrais' + infinitif = demande polie B2/C1. Conditionnel de politesse obligatoire.",tag:"Demande formelle · Conditionnel"},
+    {t:"Donnez-moi vos brochures maintenant !",ok:false,fb:"✗ L'impératif direct est brusque. Préférez: 'Pourriez-vous me donner...' ou 'Je souhaiterais consulter...'",tag:"Impératif inapproprié"},
+    {t:"Je veux aller quelque part, je sais pas où.",ok:false,fb:"✗ Registre oral ('je sais pas') et imprécision. En B2: 'Je suis à la recherche d'un séjour éco-touristique.'",tag:"Registre oral / Imprécision"}
+  ]},
+  {npc:"Excellent choix ! Le tourisme durable est notre spécialité. Avez-vous une destination en tête ?",
+   opts:[
+    {t:"N'importe où, ça m'est égal.",ok:false,fb:"✗ Réponse passive. Exprimez une PRÉFÉRENCE pour guider l'interlocuteur — compétence clé au DELF oral.",tag:"Manque d'initiative"},
+    {t:"Je suggère que vous me proposiez quelque chose en montagne, si possible.",ok:true,fb:"✓ Excellent ! 'Je suggère que' + SUBJONCTIF (proposiez). Structure parfaite B2 pour une suggestion polie.",tag:"Suggérer · Subjonctif"},
+    {t:"La montagne, ça me plaît bien.",ok:false,fb:"✗ Registre trop informel. En C1: 'J'aurais une préférence pour un cadre montagnard.'",tag:"Registre informel"}
+  ]},
+  {npc:"Parfait ! Que pensez-vous de notre offre 'Alpes Vertes' ? Elle comprend hébergement bio, randonnées et ateliers d'écologie.",
+   opts:[
+    {t:"C'est trop cher. Autre chose ?",ok:false,fb:"✗ Le prix n'a pas encore été mentionné ! La COHÉRENCE DISCURSIVE est évaluée au DELF — répondre hors propos est pénalisé.",tag:"Incohérence discursive"},
+    {t:"Je trouve que c'est une initiative écologique vraiment intéressante ! Je suis tout à fait convaincu(e).",ok:true,fb:"✓ Bravo ! 'Je trouve que' + INDICATIF (≠ subjonctif). 'Tout à fait convaincu(e)' = registre soutenu B2.",tag:"Donner son opinion · Indicatif"},
+    {t:"Mouais, pas mal...",ok:false,fb:"✗ Expression vague et familière. En B2: 'Cela semble prometteur, bien que...'",tag:"Expression vague / Familier"}
+  ]},
+  {npc:"Je suis ravie que cela vous plaise ! Souhaitez-vous que je procède à la réservation pour deux personnes ?",
+   opts:[
+    {t:"Faites comme vous voulez.",ok:false,fb:"✗ Abdique la décision. Confirmez les conditions avec une formule appropriée.",tag:"Passivité communicative"},
+    {t:"Oui, je voudrais que vous fassiez la réservation pour deux adultes, s'il vous plaît.",ok:true,fb:"✓ PARFAIT ! 'Je voudrais que' + SUBJONCTIF ('fassiez'). Obligatoire pour exprimer une volonté polie.",tag:"Volonté · Subjonctif"},
+    {t:"Oui, pour deux. Merci.",ok:false,fb:"✗ Fonctionnel mais insuffisant pour B2/C1. La version complète avec 'je voudrais que' démontre la maîtrise grammaticale.",tag:"Niveau insuffisant B2"}
+  ]},
+  {npc:"Magnifique ! Puis-je vous demander si vous avez des préférences concernant le type d'hébergement ?",
+   opts:[
+    {t:"J'aime un endroit confortable et respectueux de l'environnement.",ok:false,fb:"✗ Bonne opinion mais formulation trop simple. En C1: 'Je préférerais un établissement qui soit à la fois...'",tag:"Manque de nuance B2/C1"},
+    {t:"Je préférerais que l'hôtel soit situé près de la nature et doté d'installations écologiques.",ok:true,fb:"✓ Excellent ! Vous exprimez une préférence avec 'je préférerais que + SUBJONCTIF' et donnez des détails précis.",tag:"Préférence · Détails précis"},
+    {t:"Peu importe, du moment que c'est pas trop cher.",ok:false,fb:"✗ Registre informel ('trop cher'). Formulation peu engagée pour une réservation de séjour.",tag:"Registre informel / Peu engagé"}
+  ]},
+  {npc:"D'accord ! Nous avons plusieurs options magnifiques. Que pensez-vous de débuter par une randonnée en haute montagne ?",
+   opts:[
+    {t:"Oui, j'aime bien les randos !",ok:false,fb:"✗ Trop informel ('les randos'). En B2: 'Les randonnées pédestres m'attirent beaucoup.'",tag:"Registre informel / Abréviation"},
+    {t:"Les randonnées pédestres en montagne me séduisent tout à fait, bien que j'aimerais que le groupe soit petit.",ok:true,fb:"✓ Parfait ! 'Me séduisent' = registro formal. 'Bien que j'aimerais que' + SUBJONCTIF = expresión matizada y correcta.",tag:"Opinion nuancée · Concession"},
+    {t:"C'est pas mal si c'est pas trop difficile.",ok:false,fb:"✗ Trop informel et vague. Donnez des critères précis comme: 'à la condition que', 'pourvu que', 'pourvu qu'il y ait'.",tag:"Vaguedad / Oralidad"}
+  ]},
+  {npc:"Excellente idée ! Souhaiteriez-vous que le groupe comprenne d'autres participants ou préférez-vous une excursion privée ?",
+   opts:[
+    {t:"Je voudrais que ce soit en groupe pour rencontrer d'autres personnes écologiquement conscientes.",ok:true,fb:"✓ Superbe ! 'Je voudrais que + SUBJONCTIF' + argumentation clara. Montrez votre engagement écologique.",tag:"Volonté motivée · Subjonctif"},
+    {t:"Un groupe, c'est cool pour socialiser.",ok:false,fb:"✗ Trop informel ('cool'). En registre formel: 'Un groupe m'intéresserait car cela favorise les échanges.'",tag:"Registre familier"},
+    {t:"Peu importe, tant que les gens sont sympas.",ok:false,fb:"✗ Vague et informel. Soyez précis: 'À condition que...', 'Pourvu que les participants partagent une conscience écologique...'",tag:"Imprécision / Oralidad"}
+  ]},
+  {npc:"Parfait ! Dernière question : Souhaitez-vous que nous vous envoyions un itinéraire détaillé et les recommandations de sécurité avant votre départ ?",
+   opts:[
+    {t:"Oui, je voudrais que vous m'envoyiez tous les documents par email avec les conseils santé et sécurité.",ok:true,fb:"✓ Très bien ! 'Que vous m'envoyiez' = que + SUBJONCTIF. Vous demandez clairement une action précise et sécurisée.",tag:"Demande précise · Subjonctif"},
+    {t:"Ouais, envoie-moi tout par mail.",ok:false,fb:"✗ Tutoiement et ton trop informel ! Maintenez le vouvoiement: 'Pourriez-vous...' / 'Je voudrais que vous...'",tag:"Tutoiement inapproprié"},
+    {t:"Les documents standard suffisent.",ok:false,fb:"✗ Passif et peu engagé. Montrez votre souci: 'Je souhaiterais que vous me communiquiez également...'",tag:"Passivité"}
+  ]},
+  {npc:"Formidable ! Nous sommes heureux de vous accueillir. Pouvez-vous me confirmer vos coordonnées et vos préférences alimentaires s'il y a lieu ?",
+   opts:[
+    {t:"Mes coordonnées : 06 12 34 56 78, email jean@example.com. Je suis végétarien depuis 10 ans.",ok:true,fb:"✓ Excellent ! Information claire et structurée. Vous montrez une engagement personnel ('depuis 10 ans') et facilitez la communication.",tag:"Communication claire · Informations précises"},
+    {t:"C'est bon, vous avez mon numéro.",ok:false,fb:"✗ Insuffisant. L'agence a besoin d'email, d'allergie alimentaire, etc. Donnez les infos demandées.",tag:"Manque d'information"},
+    {t:"Je prends de tout, pas de problème.",ok:false,fb:"✗ Vague. Même si c'est vrai, confirmez clairement et donnez contact précis pour que l'agence puisse vous joindre.",tag:"Imprécision / Manque de détail"}
+  ]},
+  {npc:"Merveilleux ! Votre séjour commencera le 15 mai. Désirez-vous que nous organisions un transfert depuis l'aéroport jusqu'à l'hôtel ?",
+   opts:[
+    {t:"Je voudrais que vous m'organisiez le transfert, et que vous me communiquiez tous les détails logistiques par écrit avant ma date de départ.",ok:true,fb:"✓ PARFAIT ! Deux propositions coordonnées avec 'et que' + SUBJONCTIF. Vous êtes organisé(e) et formel(le).",tag:"Coordination complexe · Subjonctif"},
+    {t:"Ouais, le transfert c'est pratique.",ok:false,fb:"✗ Trop informel et incomplet. Confirmez précisément: 'Je vous demande que vous organisiez...'",tag:"Registre informel"},
+    {t:"Je vais prendre un taxi.",ok:false,fb:"✗ Décision personnelle, mais dépassez l'agence. Dites plutôt: 'Pourriez-vous me proposer un transfert ? Je souhaiterais que...'",tag:"Manque de collaboration"}
+  ]}
 ];
 
 /* ─────────────────────────────────────────────
@@ -1226,8 +1245,8 @@ const G3 = {
     document.getElementById('g3-fb').classList.add('hidden');
     document.getElementById('g3-opts').innerHTML = st.opts.map((opt, i) =>
       `<button class="g3-option" onclick="G3.choose(${i})"
-        style="padding:.7rem 1rem;border-radius:.85rem;font-size:.875rem;font-family:'Manrope',sans-serif">
-        <span class="exo" style="color:var(--tx2);font-size:.85rem;margin-right:.4rem">${['A','B','C'][i]} ▸</span>${opt.t}
+        style="padding:.7rem 1rem;border-radius:.75rem;font-size:.875rem;font-family:'Manrope',sans-serif">
+        <span class="exo" style="color:var(--tx2);font-size:.75rem;margin-right:.4rem">${['A','B','C'][i]} ▸</span>${opt.t}
       </button>`
     ).join('');
     this.renderDots();
@@ -1266,9 +1285,9 @@ const G3 = {
     fb.innerHTML =
       `<div style="font-weight:700;color:${opt.ok?'var(--grn)':'var(--red)'};margin-bottom:.35rem">${opt.ok?'✓ Excellent !':'✗ Pas tout à fait...'}</div>
        <div style="color:var(--tx2);font-size:.85rem">${opt.fb}</div>
-       <div style="margin-top:.5rem"><span style="font-size:.82rem;padding:.2rem .6rem;border-radius:.35rem;background:var(--blu10);color:var(--blu)">${opt.tag}</span></div>
+       <div style="margin-top:.5rem"><span style="font-size:.72rem;padding:.2rem .6rem;border-radius:.35rem;background:var(--blu10);color:var(--blu)">${opt.tag}</span></div>
        <button onclick="${isLast?'G3.summary()':'G3.next()'}"
-         class="btn btn-grn" style="margin-top:.85rem;padding:.5rem 1.2rem;border-radius:.65rem;font-size:.82rem">
+         class="btn btn-grn" style="margin-top:.75rem;padding:.5rem 1.2rem;border-radius:.65rem;font-size:.82rem">
          ${isLast?'Voir le bilan →':'Continuer →'}
        </button>`;
   },
@@ -1295,7 +1314,7 @@ const G3 = {
           <div class="${msg.ok===true?'chat-user-ok':msg.ok===false?'chat-user-err':'chat-user-neutral'}"
                style="padding:.65rem .9rem;font-size:.875rem;line-height:1.55;max-width:82%;text-align:right">
             ${msg.text}
-            ${msg.tag?`<div style="font-size:.82rem;margin-top:.3rem;color:${msg.ok?'var(--grn)':'var(--red)'}">${msg.ok?'✓':'✗'} ${msg.tag}</div>`:''}
+            ${msg.tag?`<div style="font-size:.72rem;margin-top:.3rem;color:${msg.ok?'var(--grn)':'var(--red)'}">${msg.ok?'✓':'✗'} ${msg.tag}</div>`:''}
           </div>
           <div style="flex-shrink:0;font-size:1.2rem;margin-top:.1rem">🧑‍🎓</div>
         </div>`;
@@ -1327,7 +1346,7 @@ const G3 = {
        ${this.history.filter(m=>m.type==='user').map(m=>`
         <div style="background:${m.ok?'var(--grn10)':'var(--red10)'};border:1px solid ${m.ok?'rgba(0,232,122,.2)':'rgba(255,77,109,.2)'};border-radius:.7rem;padding:.7rem;font-size:.82rem">
           <span style="color:${m.ok?'var(--grn)':'var(--red)'};font-weight:700">${m.ok?'✓':'✗'}</span>
-          <span style="color:var(--blu);font-size:.85rem;margin-left:.4rem">${m.tag}</span>
+          <span style="color:var(--blu);font-size:.75rem;margin-left:.4rem">${m.tag}</span>
           <div style="color:var(--tx2);margin-top:.25rem;font-style:italic">"${m.text}"</div>
         </div>`).join('')}`;
 
