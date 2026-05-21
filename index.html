@@ -3,200 +3,368 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Les Panas Lab — Laboratoire de Missions</title>
+<title>Les Panas LAB — Le jeu en français</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* DARK THEME (por defecto) */
   --bg:#060B18;--surf:#0C1628;--card:#111D35;--brd:#1C2E50;
   --tx1:#E8F0FE;--tx2:#7A90B8;--tx3:#3D5180;
   --grn:#00E87A;--red:#FF4D6D;--yel:#FFD166;--blu:#4F8EF7;
   --grn10:rgba(0,232,122,.1);--red10:rgba(255,77,109,.1);
   --blu10:rgba(79,142,247,.1);--yel10:rgba(255,209,102,.1);
 }
+
+body.light-theme{
+  --bg:#f0e7df;--surf:#ede5dd;--card:#faf7f4;--brd:#e8ddd3;
+  --tx1:#2c2416;--tx2:#7a6e62;--tx3:#9d8b7e;
+  --grn:#00a86b;--red:#d63447;--yel:#d4a574;--blu:#5b7c9e;
+  --grn10:rgba(0,168,107,.12);--red10:rgba(214,52,71,.12);
+  --blu10:rgba(91,124,158,.12);--yel10:rgba(212,165,116,.12);
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx1);min-height:100vh;overflow-x:hidden;
-font-size:17px;}
+
+body{
+  font-family:'Manrope',sans-serif;
+  background:var(--bg);color:var(--tx1);
+  min-height:100vh;overflow-x:hidden;
+  font-size:18px;
+  transition:background .4s,color .4s;
+}
 h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
 
-/* Grid background */
 .grid-bg{
   background-image:
     linear-gradient(rgba(79,142,247,.04) 1px,transparent 1px),
     linear-gradient(90deg,rgba(79,142,247,.04) 1px,transparent 1px);
   background-size:48px 48px
 }
+body.light-theme .grid-bg{
+  background-image:
+    linear-gradient(rgba(91,124,158,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(91,124,158,.08) 1px,transparent 1px);
+}
 
-/* Glows */
-.glow-grn{box-shadow:0 0 24px rgba(0,232,122,.35)}
-.glow-blu{box-shadow:0 0 24px rgba(79,142,247,.3)}
+.glow-grn{box-shadow:0 0 30px rgba(0,232,122,.4)}
+body.light-theme .glow-grn{box-shadow:0 0 25px rgba(0,168,107,.35)}
 
-/* Neon */
-.neon{color:var(--grn);text-shadow:0 0 18px rgba(0,232,122,.45)}
-.neon-blu{color:var(--blu);text-shadow:0 0 14px rgba(79,142,247,.4)}
+.glow-blu{box-shadow:0 0 30px rgba(79,142,247,.35)}
+body.light-theme .glow-blu{box-shadow:0 0 25px rgba(91,124,158,.3)}
 
-/* Animations */
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
-@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+.neon{color:var(--grn);text-shadow:0 0 20px rgba(0,232,122,.5)}
+body.light-theme .neon{text-shadow:0 0 15px rgba(0,168,107,.3)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes popIn{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 @keyframes twinkle{0%,100%{opacity:.12}50%{opacity:.7}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes scanUp{0%{transform:translateY(100%)}100%{transform:translateY(-100%)}}
-
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 .fade-up{animation:fadeUp .35s ease both}
 .pop-in{animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both}
 .shake{animation:shake .38s ease}
+.pulse-anim{animation:pulse .6s ease infinite}
 
-/* Drag & Drop */
-.drag-chip{
-  cursor:grab;transition:transform .15s,opacity .15s,box-shadow .15s;
-  user-select:none;touch-action:none;
-  background:var(--card);border:1px solid var(--brd);color:var(--tx1);
-  min-height:46px;display:inline-flex;align-items:center;
+/* ── THEME TOGGLE ── */
+.theme-toggle{
+  position:fixed;top:1rem;right:1.5rem;z-index:100;
+  background:var(--card);border:2px solid var(--brd);
+  border-radius:.8rem;padding:.5rem .6rem;cursor:pointer;
+  font-size:1.3rem;transition:all .3s;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
 }
-.drag-chip:active{cursor:grabbing;transform:scale(1.07);box-shadow:0 10px 26px rgba(0,0,0,.5)}
-.drag-chip.dragging{opacity:.2;transform:scale(.9)}
-.drag-chip.ok{border-color:var(--grn)!important;background:var(--grn10)!important;color:var(--grn)!important}
-.drag-chip.err{border-color:var(--red)!important;background:var(--red10)!important;color:var(--red)!important}
+.theme-toggle:hover{transform:scale(1.1);border-color:var(--grn)}
+body.light-theme .theme-toggle{box-shadow:0 4px 12px rgba(0,0,0,.1)}
+
+/* ── DRAG CHIPS ── */
+.drag-chip{
+  cursor:grab;
+  transition:transform .15s,opacity .15s,box-shadow .15s;
+  user-select:none;-webkit-user-select:none;
+  touch-action:none;
+  background:var(--card);border:2px solid var(--brd);color:var(--tx1);
+  min-height:50px;display:inline-flex;align-items:center;
+  font-size:1.05rem;font-weight:700;
+}
+.drag-chip:active{cursor:grabbing;transform:scale(1.08);box-shadow:0 12px 28px rgba(0,0,0,.6)}
+.drag-chip.dragging{opacity:.15;transform:scale(.9)}
+.drag-chip.ok{border-color:var(--grn)!important;background:var(--grn10)!important;color:var(--grn)!important;box-shadow:0 0 16px rgba(0,232,122,.4)}
+.drag-chip.err{border-color:var(--red)!important;background:var(--red10)!important;color:var(--red)!important;box-shadow:0 0 16px rgba(255,77,109,.35)}
 
 /* Ghost táctil */
 #touch-ghost{
   position:fixed;pointer-events:none;z-index:9999;
-  opacity:.9;transform:scale(1.12) rotate(2deg);
-  border-radius:.65rem;font-family:'Exo 2',sans-serif;font-weight:700;
-  padding:.6rem 1.1rem;font-size:1rem;
+  opacity:.92;transform:scale(1.15) rotate(3deg);
+  border-radius:.7rem;font-family:'Exo 2',sans-serif;font-weight:800;
+  padding:.7rem 1.2rem;font-size:1.1rem;
   background:var(--blu);color:#fff;
-  border:2px solid var(--grn);
-  box-shadow:0 14px 34px rgba(0,0,0,.65);white-space:nowrap;
+  border:2.5px solid var(--grn);
+  box-shadow:0 16px 38px rgba(0,0,0,.7);white-space:nowrap;
 }
 
-.drop-zone{
-  min-height:140px;transition:all .2s;border:2px dashed var(--brd);
-  border-radius:1rem
+/* ── DROP ZONES ── */
+.drop-zone{min-height:150px;transition:all .2s;border:2.5px dashed var(--brd);border-radius:1.2rem}
+.drop-zone.over{border-color:var(--grn)!important;background:rgba(0,232,122,.12)!important;transform:scale(1.03);box-shadow:0 0 20px rgba(0,232,122,.25)}
+
+/* ── FLIP CARDS ── */
+.flip-card{
+  perspective:1000px;
+  width:100%;height:120px;cursor:pointer;
 }
-.drop-zone.over{
-  border-color:var(--grn)!important;background:rgba(0,232,122,.08)!important;
-  transform:scale(1.02)
+.flip-card-inner{
+  position:relative;
+  width:100%;height:100%;
+  transition:transform .6s;
+  transform-style:preserve-3d;
+}
+.flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
+.flip-card-front,.flip-card-back{
+  position:absolute;width:100%;height:100%;
+  backface-visibility:hidden;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:1rem;font-weight:700;font-size:1.05rem;
+  border:2px solid var(--brd);
+  transition:all .2s;
+}
+.flip-card-front{background:var(--card);color:var(--tx1)}
+.flip-card-back{
+  background:var(--surf);color:var(--tx2);
+  transform:rotateY(180deg);
+  padding:1.2rem;text-align:center;
+  word-break:break-word;
+  overflow-wrap:break-word;
+}
+.flip-card.correct .flip-card-back{
+  background:var(--grn10);color:var(--grn);border-color:var(--grn);
+  box-shadow:0 0 18px rgba(0,232,122,.3);
+}
+.flip-card.incorrect .flip-card-back{
+  background:var(--red10);color:var(--red);border-color:var(--red);
+  box-shadow:0 0 18px rgba(255,77,109,.3);
 }
 
-/* Timer bar */
-.tbar{height:5px;border-radius:3px;transition:background .4s}
-.tbar-grn{background:var(--grn)}
-.tbar-yel{background:var(--yel)}
-.tbar-red{background:var(--red)}
+/* ── TIMER ── */
+.tbar{height:7px;border-radius:3px;transition:background .4s}
+.tbar-grn{background:var(--grn)}.tbar-yel{background:var(--yel)}.tbar-red{background:var(--red)}
 
-/* Chat */
-.chat-npc{
-  background:var(--card);border:1px solid var(--brd);
-  border-radius:0 .9rem .9rem .9rem
-}
-.chat-user-ok{
-  background:rgba(0,232,122,.1);border:1px solid rgba(0,232,122,.35);
-  border-radius:.9rem 0 .9rem .9rem
-}
-.chat-user-err{
-  background:var(--red10);border:1px solid rgba(255,77,109,.35);
-  border-radius:.9rem 0 .9rem .9rem
-}
-.chat-user-neutral{
-  background:var(--blu10);border:1px solid rgba(79,142,247,.3);
-  border-radius:.9rem 0 .9rem .9rem
-}
-.g3-option{
-  background:var(--surf);border:1px solid var(--brd);
-  transition:all .18s;cursor:pointer;text-align:left;width:100%
-}
-.g3-option:hover{border-color:var(--blu);background:var(--blu10);outline:none}
+/* ── CHAT ── */
+.chat-npc{background:var(--card);border:1px solid var(--brd);border-radius:0 1.2rem 1.2rem 1.2rem;transition:all .3s}
+.chat-user-ok{background:rgba(0,232,122,.12);border:1px solid rgba(0,232,122,.35);border-radius:1.2rem 0 1.2rem 1.2rem}
+.chat-user-err{background:var(--red10);border:1px solid rgba(255,77,109,.35);border-radius:1.2rem 0 1.2rem 1.2rem}
+.chat-user-neutral{background:var(--blu10);border:1px solid rgba(79,142,247,.3);border-radius:1.2rem 0 1.2rem 1.2rem}
+.g3-option{background:var(--surf);border:2px solid var(--brd);transition:all .18s;cursor:pointer;text-align:left;width:100%;min-height:60px;font-size:1.05rem}
+.g3-option:hover,.g3-option:focus{border-color:var(--blu);background:var(--blu10);outline:none;transform:translateX(4px)}
 
-/* Nav */
-.nav-bar{background:rgba(6,11,24,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd)}
+/* ── NAV ── */
+.nav-bar{background:rgba(6,11,24,.9);backdrop-filter:blur(14px);border-bottom:2px solid var(--brd);transition:all .3s}
+body.light-theme .nav-bar{background:rgba(250,247,244,.85)}
 
-/* Cards */
-.game-card{background:var(--card);border:1px solid var(--brd);transition:all .3s;cursor:pointer}
-.game-card:hover{border-color:var(--blu);transform:translateY(-5px);box-shadow:0 12px 36px rgba(79,142,247,.18)}
-.game-card:active{transform:translateY(-2px)}
+/* ── GAME CARDS ── */
+.game-card{background:var(--card);border:2px solid var(--brd);transition:all .35s;cursor:pointer}
+.game-card:hover{border-color:var(--blu);transform:translateY(-8px);box-shadow:0 16px 40px rgba(79,142,247,.25)}
+.game-card:active{transform:translateY(-3px)}
 
-/* Btns */
-.btn{font-family:'Exo 2',sans-serif;font-weight:700;cursor:pointer;border:none;outline:none;transition:all .2s}
-.btn-grn{background:var(--grn);color:#060B18}
-.btn-grn:hover{box-shadow:0 0 22px rgba(0,232,122,.45);transform:translateY(-1px)}
-.btn-blu{background:var(--blu);color:#fff}
-.btn-blu:hover{box-shadow:0 0 22px rgba(79,142,247,.45);transform:translateY(-1px)}
-.btn-red{background:var(--red);color:#fff}
-.btn-red:hover{box-shadow:0 0 22px rgba(255,77,109,.4);transform:translateY(-1px)}
-.btn-ghost{background:transparent;border:1px solid var(--brd);color:var(--tx2)}
-.btn-ghost:hover{border-color:var(--tx2);color:var(--tx1)}
+/* ── BUTTONS ── */
+.btn{font-family:'Exo 2',sans-serif;font-weight:800;cursor:pointer;border:none;outline:none;transition:all .25s;font-size:1.05rem}
+.btn-grn{background:var(--grn);color:#fff}.btn-grn:hover{box-shadow:0 0 28px rgba(0,232,122,.5);transform:translateY(-2px)}
+body.light-theme .btn-grn{color:#060B18}
+.btn-blu{background:var(--blu);color:#fff}.btn-blu:hover{box-shadow:0 0 28px rgba(79,142,247,.5);transform:translateY(-2px)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{box-shadow:0 0 28px rgba(255,77,109,.45);transform:translateY(-2px)}
+.btn-ghost{background:transparent;border:2px solid var(--brd);color:var(--tx2)}
+.btn-ghost:hover{border-color:var(--tx1);color:var(--tx1);transform:translateY(-1px)}
 
-/* Dots */
-.dot{width:8px;height:8px;border-radius:50%;background:var(--brd);transition:all .3s}
-.dot-on{background:var(--grn);box-shadow:0 0 8px rgba(0,232,122,.6)}
-.dot-done{background:var(--blu)}
+/* ── DOTS ── */
+.dot{width:10px;height:10px;border-radius:50%;background:var(--brd);transition:all .3s}
+.dot-on{background:var(--grn);box-shadow:0 0 10px rgba(0,232,122,.7);animation:pulse 1.5s ease infinite}
+.dot-done{background:var(--blu);box-shadow:0 0 6px rgba(79,142,247,.5)}
 
-/* Modal */
-.modal-wrap{position:fixed;inset:0;z-index:60;background:rgba(6,11,24,.92);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:1rem}
+/* ── MODAL ── */
+.modal-wrap{position:fixed;inset:0;z-index:60;background:rgba(6,11,24,.95);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;transition:all .3s}
+body.light-theme .modal-wrap{background:rgba(240,231,223,.93)}
 
-/* Schema cards */
-.schema-card{background:var(--card);border:1px solid var(--brd);border-radius:1.25rem;padding:1.5rem}
-.accent-grn{border-left:3px solid var(--grn)}
-.accent-blu{border-left:3px solid var(--blu)}
-.accent-red{border-left:3px solid var(--red)}
-
-/* Progress bar questions */
-.qprogress{height:3px;background:var(--surf);border-radius:2px;overflow:hidden}
+/* ── PROGRESS ── */
+.qprogress{height:5px;background:var(--surf);border-radius:2px;overflow:hidden}
 .qprogress-fill{height:100%;background:var(--blu);border-radius:2px;transition:width .3s}
 
-/* Hero gradient */
+/* ── HERO ── */
 .hero-grad{
   background:
-    radial-gradient(ellipse 90% 55% at 50% -10%,rgba(79,142,247,.14),transparent),
-    radial-gradient(ellipse 60% 40% at 85% 55%,rgba(0,232,122,.07),transparent)
+    radial-gradient(ellipse 100% 60% at 50% -15%,rgba(79,142,247,.18),transparent),
+    radial-gradient(ellipse 70% 45% at 85% 60%,rgba(0,232,122,.1),transparent)
+}
+body.light-theme .hero-grad{
+  background:
+    radial-gradient(ellipse 100% 60% at 50% -15%,rgba(91,124,158,.15),transparent),
+    radial-gradient(ellipse 70% 45% at 85% 60%,rgba(0,168,107,.08),transparent)
 }
 
-/* Hidden */
 .hidden{display:none!important}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:var(--surf)}
 ::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
-
-/* Stars */
 #stars-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-
-/* Sections stack */
+body.light-theme #stars-bg{display:none}
 .game-section{position:relative;z-index:1;min-height:100vh}
 
-/* Option btn game 2 */
+/* ── GAME 2 OPTIONS ── */
 .g2-opt{
-  background:var(--card);border:1px solid var(--brd);color:var(--tx1);
-  font-family:'Exo 2',sans-serif;font-weight:600;
+  background:var(--card);border:2px solid var(--brd);color:var(--tx1);
+  font-family:'Exo 2',sans-serif;font-weight:700;
   transition:all .18s;cursor:pointer;text-align:left;
-  padding:1rem 1.1rem;border-radius:.85rem;width:100%;
-  min-height:54px;font-size:1rem;
+  padding:1.2rem 1.3rem;border-radius:1rem;width:100%;
+  min-height:62px;font-size:1.05rem;
 }
-.g2-opt:hover{border-color:var(--blu);background:var(--blu10)}
-.g2-opt.opt-ok{border-color:var(--grn)!important;background:var(--grn10)!important;color:var(--grn)!important;pointer-events:none}
-.g2-opt.opt-err{border-color:var(--red)!important;background:var(--red10)!important;color:var(--red)!important;pointer-events:none}
-.g2-opt.opt-dim{opacity:.35;pointer-events:none}
+.g2-opt:hover,.g2-opt:focus{border-color:var(--blu);background:var(--blu10);outline:none;transform:translateX(4px)}
+.g2-opt.opt-ok{border-color:var(--grn)!important;background:var(--grn10)!important;color:var(--grn)!important;pointer-events:none;box-shadow:0 0 16px rgba(0,232,122,.4)}
+.g2-opt.opt-err{border-color:var(--red)!important;background:var(--red10)!important;color:var(--red)!important;pointer-events:none;box-shadow:0 0 16px rgba(255,77,109,.35)}
+.g2-opt.opt-dim{opacity:.3;pointer-events:none}
 
-/* Feedback box */
-.fb-ok{background:var(--grn10);border:1px solid rgba(0,232,122,.3);color:var(--tx1)}
-.fb-err{background:var(--red10);border:1px solid rgba(255,77,109,.3);color:var(--tx1)}
-.fb-timeout{background:var(--yel10);border:1px solid rgba(255,209,102,.3);color:var(--tx1)}
+/* ── FEEDBACK ── */
+.fb-ok{background:var(--grn10);border:2px solid rgba(0,232,122,.4);color:var(--tx1)}
+.fb-err{background:var(--red10);border:2px solid rgba(255,77,109,.4);color:var(--tx1)}
+.fb-timeout{background:var(--yel10);border:2px solid rgba(255,209,102,.4);color:var(--tx1)}
 
-/* Score flash */
-@keyframes scoreFlash{0%{transform:scale(1.4);color:var(--grn)}100%{transform:scale(1)}}
-.score-flash{animation:scoreFlash .4s ease both}
-
-/* Mobile tweaks */
+/* ── MOBILE ── */
 @media(max-width:640px){
-  body{font-size:16px}
-  .hero-title{font-size:2.1rem!important}
-  .schema-grid,.gamecards-grid,.g1-zones-grid,.g2-opts-grid{grid-template-columns:1fr!important}
-  .drag-chip{min-height:50px;padding:.7rem 1.1rem!important;font-size:1.05rem!important}
-  .g2-opt{font-size:1rem!important;padding:.95rem 1rem!important;min-height:58px}
-  .g3-option{padding:.9rem 1rem!important;font-size:1rem!important}
-  .btn{min-height:48px}
+  body{font-size:17px}
+  .hero-title{font-size:2.3rem!important}
+  .schema-grid,.gamecards-grid,.g1-zones-grid,.g2-opts-grid,.g4-cards-grid{grid-template-columns:1fr!important}
+  .drag-chip{min-height:54px;padding:.75rem 1.2rem!important;font-size:1.08rem!important}
+  .g2-opt{font-size:1.05rem!important;padding:1rem 1.2rem!important;min-height:64px}
+  .g3-option{padding:1rem 1.2rem!important;font-size:1.05rem!important}
+  .btn{min-height:50px;padding:1rem!important}
+  .flip-card{height:140px}
+  .theme-toggle{top:.8rem;right:1rem;font-size:1.1rem}
+}
+
+/* ════════════════ GAME 4 MOBILE FIX ════════════════ */
+
+.flip-card{
+  min-height:110px;
+  perspective:1000px;
+}
+
+.flip-card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  min-height:110px;
+  transition:transform .6s;
+  transform-style:preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner{
+  transform:rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back{
+  position:absolute;
+  width:100%;
+  height:100%;
+  border-radius:1rem;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:1rem;
+  text-align:center;
+
+  border:2px solid var(--brd);
+  background:var(--card);
+
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+
+.flip-card-front{
+  font-size:1.1rem;
+  font-weight:800;
+  color:var(--tx1);
+}
+
+.flip-card-back{
+  transform:rotateY(180deg);
+  font-size:1rem;
+  font-weight:700;
+}
+
+.flip-card.correct{
+  box-shadow:0 0 18px rgba(0,255,153,.5);
+}
+
+.flip-card.incorrect{
+  box-shadow:0 0 18px rgba(255,77,109,.5);
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+  #sec-g4 h2{
+    font-size:1.45rem !important;
+  }
+
+  #g4-q{
+    font-size:1.45rem !important;
+  }
+
+  #g4-hint{
+    font-size:.95rem !important;
+  }
+
+  .flip-card{
+    min-height:95px;
+  }
+
+  .flip-card-front{
+    font-size:1rem !important;
+    padding:.8rem;
+  }
+
+  .flip-card-back{
+    font-size:.92rem !important;
+    padding:.8rem;
+  }
+
+  #sec-g4 button{
+    font-size:.95rem !important;
+    padding:.95rem !important;
+  }
+
+  #g4-score{
+    font-size:1.3rem !important;
+  }
+}
+
+@media(max-width:480px){
+
+  .g4-cards-grid{
+    grid-template-columns:1fr 1fr !important;
+    gap:.8rem !important;
+  }
+
+  .flip-card{
+    min-height:88px;
+  }
+
+  .flip-card-front{
+    font-size:.92rem !important;
+    line-height:1.2;
+  }
+
+  .flip-card-back{
+    font-size:.85rem !important;
+    line-height:1.2;
+  }
+
+  #sec-g4{
+    padding-top:4.5rem !important;
+  }
 }
 </style>
 </head>
@@ -205,453 +373,279 @@ h1,h2,h3,h4,.exo{font-family:'Exo 2',sans-serif}
 <div id="stars-bg" aria-hidden="true"></div>
 <div id="touch-ghost" class="hidden"></div>
 
-<!-- ══════════════════════════════════════════ -->
-<!--  NAV                                      -->
-<!-- ══════════════════════════════════════════ -->
+<!-- ══════ THEME TOGGLE ══════ -->
+<button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+  <span id="theme-icon">🌙</span>
+</button>
+
+<!-- ══════ NAV ══════ -->
 <nav class="nav-bar fixed top-0 left-0 right-0 z-50">
-  <div style="max-width:1100px;margin:0 auto;padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between">
-    <button onclick="showLanding()" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.4rem">
-      <span class="exo" style="font-size:1.25rem;font-weight:900;color:var(--grn)">LES PANAS</span>
-      <span class="exo" style="font-size:1.25rem;font-weight:900;color:var(--tx1)">·LAB</span>
-      <span style="background:var(--grn);color:#060B18;font-size:.6rem;font-family:'Exo 2',sans-serif;font-weight:900;padding:2px 6px;border-radius:3px;margin-left:2px">BETA</span>
+  <div style="max-width:1200px;margin:0 auto;padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between">
+    <button onclick="showLanding()" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.5rem">
+      <span class="exo" style="font-size:1.5rem;font-weight:900;color:var(--grn)">Les Panas</span>
+      <span class="exo" style="font-size:1.5rem;font-weight:900;color:var(--tx1)">LAB</span>
+      <span style="background:var(--grn);color:#060B18;font-size:.7rem;font-family:'Exo 2',sans-serif;font-weight:900;padding:3px 8px;border-radius:3px;margin-left:5px">BETA</span>
     </button>
-    <div style="display:flex;align-items:center;gap:1rem">
-      <div id="nav-pts" class="hidden exo" style="font-weight:700;font-size:1rem;color:var(--grn)">
-        ★ <span id="nav-pts-val">0</span> pts
-      </div>
-      <button onclick="showLanding()" class="btn btn-ghost" style="padding:.45rem 1rem;border-radius:.6rem;font-size:.85rem">← Inicio</button>
+    <div style="display:flex;align-items:center;gap:1.2rem">
+      <div id="nav-pts" class="hidden exo" style="font-weight:800;font-size:1.2rem;color:var(--grn)">★ <span id="nav-pts-val">0</span> pts</div>
+      <button onclick="showLanding()" class="btn btn-ghost" style="padding:.6rem 1.1rem;border-radius:.75rem;font-size:1rem">← Début</button>
     </div>
   </div>
 </nav>
 
-<!-- ══════════════════════════════════════════ -->
-<!--  LANDING                                  -->
-<!-- ══════════════════════════════════════════ -->
-<section id="sec-landing" class="game-section hero-grad" style="padding-top:5.5rem;padding-bottom:4rem">
-
-  <!-- HERO -->
-  <div style="max-width:900px;margin:0 auto;padding:3rem 1.5rem 0;text-align:center">
-
-    <div class="fade-up" style="display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:2rem;margin-bottom:1.5rem;background:var(--blu10);border:1px solid rgba(79,142,247,.3)">
-      <span style="font-size:.8rem;font-family:'Exo 2',sans-serif;font-weight:600;color:var(--blu)">🎯Le passage du niveau A2 au niveau B1 </span>
-    </div>
-
-    <h1 class="hero-title fade-up exo" style="font-size:3.2rem;font-weight:900;line-height:1.1;margin-bottom:1rem;animation-delay:.05s">
-      Domina el Francés<br><span class="neon">jugando misiones</span>
+<!-- ══════ LANDING ══════ -->
+<section id="sec-landing" class="game-section hero-grad" style="padding-top:6rem;padding-bottom:3rem">
+  <div style="max-width:1000px;margin:0 auto;padding:4rem 1.5rem 0;text-align:center">
+    <h1 class="hero-title fade-up exo" style="font-size:3.6rem;font-weight:900;line-height:1.1;margin-bottom:1.5rem;animation-delay:.05s">
+      <span class="neon">Domina Francés</span><br>Jugando
     </h1>
-
-    <p class="fade-up" style="font-size:1.05rem;color:var(--tx2);max-width:580px;margin:0 auto 2rem;line-height:1.75;animation-delay:.1s">
-      Tres mini-juegos adaptativos con los temas para B1 módulo 6. Gramática avanzada, vocabulario temático y funciones pragmáticas — con feedback gramatical inmediato.
+    <p class="fade-up" style="font-size:1.25rem;color:var(--tx2);max-width:650px;margin:0 auto 2.5rem;line-height:1.8;animation-delay:.1s">
+      4 juegos explosivos con toda la gramática "la transition de A2 à B1"
     </p>
+    <button onclick="document.getElementById('sec-games').scrollIntoView({behavior:'smooth'})"
+            class="fade-up btn btn-grn glow-grn" style="padding:1.1rem 2.5rem;border-radius:1rem;font-size:1.25rem;animation-delay:.15s">
+      🚀 JOUER MAINTENANT
+    </button>
 
-    <div class="fade-up" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation-delay:.15s">
-      <button onclick="document.getElementById('sec-games').scrollIntoView({behavior:'smooth'})"
-              class="btn btn-grn glow-grn" style="padding:.8rem 2rem;border-radius:.85rem;font-size:1rem">
-        🚀 Iniciar Misiones
-      </button>
-      <button onclick="document.getElementById('sec-schema').scrollIntoView({behavior:'smooth'})"
-              class="btn btn-ghost" style="padding:.8rem 1.5rem;border-radius:.85rem;font-size:1rem">
-        Ver Esquema Pedagógico →
-      </button>
+    <div class="fade-up" style="display:grid;grid-template-columns:repeat(4,1fr);max-width:720px;margin:4rem auto 0;gap:1rem;animation-delay:.2s">
+      <div style="text-align:center"><div class="exo" style="font-size:2.8rem;font-weight:900;color:var(--grn)">4</div><div style="font-size:1.05rem;color:var(--tx2)">Juegos</div></div>
+      <div style="text-align:center;border-left:1px solid var(--brd);border-right:1px solid var(--brd)"><div class="exo" style="font-size:2.8rem;font-weight:900;color:var(--blu)">100+</div><div style="font-size:1.05rem;color:var(--tx2)">Items</div></div>
+      <div style="text-align:center"><div class="exo" style="font-size:2.8rem;font-weight:900;color:var(--yel)">∞</div><div style="font-size:1.05rem;color:var(--tx2)">Rondas</div></div>
+      <div style="text-align:center"><div class="exo" style="font-size:2.8rem;font-weight:900;color:var(--red)">😎</div><div style="font-size:1.05rem;color:var(--tx2)">Nivel B1</div></div>
     </div>
+  </div>
 
-    <!-- Stats strip -->
-    <div class="fade-up" style="display:grid;grid-template-columns:repeat(3,1fr);max-width:480px;margin:3.5rem auto 0;animation-delay:.2s">
-      <div style="text-align:center">
-        <div class="exo" style="font-size:2rem;font-weight:900;color:var(--grn)">3</div>
-        <div style="font-size:.8rem;color:var(--tx2);margin-top:.2rem">Tipos de Juego</div>
+  <!-- GAME CARDS -->
+  <div id="sec-games" style="max-width:1200px;margin:5rem auto 0;padding:0 1.5rem 3rem">
+    <h2 class="exo" style="font-size:2.5rem;font-weight:900;text-align:center;margin-bottom:3rem;color:var(--tx1)">
+      Choisissez <span style="color:var(--grn)">votre mission</span>
+    </h2>
+    <div class="gamecards-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem">
+      <div class="game-card" style="border-radius:1.5rem;padding:2rem;text-align:center;cursor:pointer" onclick="startGame1()">
+        <div style="width:80px;height:80px;border-radius:1.2rem;background:var(--grn10);border:2px solid rgba(0,232,122,.3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.3rem">🧩</div>
+        <h3 class="exo" style="font-size:1.4rem;font-weight:900;color:var(--grn);margin-bottom:.3rem">Tri</h3>
+        <p style="font-size:1rem;color:var(--tx2);margin-bottom:1rem">Drag & Drop</p>
+        <button class="btn btn-grn glow-grn" style="width:100%;padding:1rem;border-radius:1rem;font-size:1.1rem">▶ JOUER</button>
       </div>
-      <div style="text-align:center;border-left:1px solid var(--brd);border-right:1px solid var(--brd)">
-        <div class="exo" style="font-size:2rem;font-weight:900;color:var(--blu)">24+</div>
-        <div style="font-size:.8rem;color:var(--tx2);margin-top:.2rem">Temas B1</div>
+      <div class="game-card" style="border-radius:1.5rem;padding:2rem;text-align:center;cursor:pointer" onclick="startGame2()">
+        <div style="width:80px;height:80px;border-radius:1.2rem;background:var(--blu10);border:2px solid rgba(79,142,247,.3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.3rem">⚡</div>
+        <h3 class="exo" style="font-size:1.4rem;font-weight:900;color:var(--blu);margin-bottom:.3rem">Course</h3>
+        <p style="font-size:1rem;color:var(--tx2);margin-bottom:1rem">Time Attack</p>
+        <button class="btn btn-blu" style="width:100%;padding:1rem;border-radius:1rem;font-size:1.1rem">▶ JOUER</button>
       </div>
-      <div style="text-align:center">
-        <div class="exo" style="font-size:2rem;font-weight:900;color:var(--yel)">100%</div>
-        <div style="font-size:.8rem;color:var(--tx2);margin-top:.2rem">Con Explicación</div>
+      <div class="game-card" style="border-radius:1.5rem;padding:2rem;text-align:center;cursor:pointer" onclick="startGame3()">
+        <div style="width:80px;height:80px;border-radius:1.2rem;background:var(--red10);border:2px solid rgba(255,77,109,.3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.3rem">💬</div>
+        <h3 class="exo" style="font-size:1.4rem;font-weight:900;color:var(--red);margin-bottom:.3rem">Dialogue</h3>
+        <p style="font-size:1rem;color:var(--tx2);margin-bottom:1rem">Chat NPC</p>
+        <button class="btn btn-red" style="width:100%;padding:1rem;border-radius:1rem;font-size:1.1rem">▶ JOUER</button>
+      </div>
+      <div class="game-card" style="border-radius:1.5rem;padding:2rem;text-align:center;cursor:pointer" onclick="startGame4()">
+        <div style="width:80px;height:80px;border-radius:1.2rem;background:var(--yel10);border:2px solid rgba(255,209,102,.3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.3rem">🔄</div>
+        <h3 class="exo" style="font-size:1.4rem;font-weight:900;color:var(--yel);margin-bottom:.3rem">FlipFlop</h3>
+        <p style="font-size:1rem;color:var(--tx2);margin-bottom:1rem">Adverbios -MENT</p>
+        <button class="btn" style="width:100%;padding:1rem;border-radius:1rem;font-size:1.1rem;background:var(--yel);color:#060B18;font-weight:800">▶ JOUER</button>
       </div>
     </div>
   </div>
 
-  <!-- ── SCHEMA PEDAGÓGICO ── -->
-  <div id="sec-schema" style="max-width:1100px;margin:5rem auto 0;padding:0 1.5rem">
-    <div style="text-align:center;margin-bottom:2.5rem">
-      <h2 class="exo" style="font-size:1.9rem;font-weight:700;margin-bottom:.4rem">
-        Esquema <span style="color:var(--grn)">Pedagógico</span>
-      </h2>
-      <p style="color:var(--tx2);font-size:.95rem">Cómo cada tema se adapta a cada mecánica de juego</p>
-    </div>
-
-    <div class="schema-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem">
-
-      <!-- Card 1 -->
-      <div class="schema-card accent-grn">
-        <div style="font-size:1.8rem;margin-bottom:.75rem">🧩</div>
-        <h3 class="exo" style="font-size:1.05rem;font-weight:700;color:var(--grn);margin-bottom:.2rem">Le Tri Cognitif</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1rem">Drag & Drop · Clasificación</p>
-        <div style="display:flex;flex-direction:column;gap:.55rem;font-size:.83rem">
-          <div style="display:flex;gap:.5rem"><span style="color:var(--grn)">▸</span><span><strong>Être vs Avoir</strong> — Arrastra verbos al auxiliar correcto del passé composé</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--grn)">▸</span><span><strong>Masculin/Féminin</strong> — Clasifica el vocabulario temático (tecnología, cine)</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--grn)">▸</span><span><strong>Négation</strong> — Separa estructuras negativas por tipo</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--grn)">▸</span><span><strong>Gérondif</strong> — Simultaneidad vs modo</span></div>
-        </div>
-        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--grn10);font-size:.75rem;color:var(--grn)">
-          💡 Activa la memoria procedimental mediante movimiento físico
-        </div>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="schema-card accent-blu">
-        <div style="font-size:1.8rem;margin-bottom:.75rem">⚡</div>
-        <h3 class="exo" style="font-size:1.05rem;font-weight:700;color:var(--blu);margin-bottom:.2rem">La Course de Traduction</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1rem">Time Attack · 4 opciones / 7 segundos</p>
-        <div style="display:flex;flex-direction:column;gap:.55rem;font-size:.83rem">
-          <div style="display:flex;gap:.5rem"><span style="color:var(--blu)">▸</span><span><strong>Négation Complexe</strong> — ne...jamais/plus/rien/personne/aucun</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--blu)">▸</span><span><strong>Voix Passive</strong> — Identifica la forma verbal correcta</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--blu)">▸</span><span><strong>Subjonctif/Indicatif</strong> — Contraste bajo presión de tiempo</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--blu)">▸</span><span><strong>Vocabulario Temático</strong> — Tecnología, Cine, Medio Ambiente</span></div>
-        </div>
-        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--blu10);font-size:.75rem;color:var(--blu)">
-          💡 El estrés de tiempo simula la presión real del examen oral
-        </div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="schema-card accent-red">
-        <div style="font-size:1.8rem;margin-bottom:.75rem">💬</div>
-        <h3 class="exo" style="font-size:1.05rem;font-weight:700;color:var(--red);margin-bottom:.2rem">Le Débloqueur</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:1rem">Mission Dialogue · Chat NPC</p>
-        <div style="display:flex;flex-direction:column;gap:.55rem;font-size:.83rem">
-          <div style="display:flex;gap:.5rem"><span style="color:var(--red)">▸</span><span><strong>Incitar a la acción</strong> — Reserva eco-turística en registro formal</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--red)">▸</span><span><strong>Dar Opinión</strong> — Satisfacción/decepción sobre un programa</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--red)">▸</span><span><strong>Registro B2/C1</strong> — Fórmulas pragmáticas contextualizadas</span></div>
-          <div style="display:flex;gap:.5rem"><span style="color:var(--red)">▸</span><span><strong>Subjonctif pragmático</strong> — En situación comunicativa real</span></div>
-        </div>
-        <div style="margin-top:1rem;padding:.6rem;border-radius:.5rem;background:var(--red10);font-size:.75rem;color:var(--red)">
-          💡 Contextualiza la gramática en interacciones auténticas
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ── GAME LAUNCHER CARDS ── -->
-  <div id="sec-games" style="max-width:1100px;margin:5rem auto 0;padding:0 1.5rem 2rem">
-    <div style="text-align:center;margin-bottom:2.5rem">
-      <h2 class="exo" style="font-size:1.9rem;font-weight:700;margin-bottom:.4rem">
-        Elige tu <span style="color:var(--grn)">Misión</span>
-      </h2>
-      <p style="color:var(--tx2);font-size:.95rem">Tres mecánicas · Todos los temas para B1 · Feedback gramatical completo</p>
-    </div>
-
-    <div class="gamecards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem">
-
-      <!-- Game 1 -->
-      <div class="game-card" style="border-radius:1.25rem;padding:1.75rem;text-align:center" onclick="startGame1()">
-        <div style="width:64px;height:64px;border-radius:1rem;background:var(--grn10);border:1px solid rgba(0,232,122,.2);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 1rem">🧩</div>
-        <h3 class="exo" style="font-size:1.15rem;font-weight:700;color:var(--grn);margin-bottom:.2rem">Le Tri Cognitif</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.75rem">Drag & Drop</p>
-        <p style="font-size:.85rem;color:var(--tx2);line-height:1.55;margin-bottom:1rem">Arrastra verbos, sustantivos y estructuras a las categorías gramaticales correctas.</p>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)">Passé Composé</span>
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)">Genre</span>
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)">Négation</span>
-        </div>
-        <button class="btn btn-grn glow-grn" style="width:100%;padding:.7rem;border-radius:.75rem;font-size:.9rem">▶ INICIAR</button>
-      </div>
-
-      <!-- Game 2 -->
-      <div class="game-card" style="border-radius:1.25rem;padding:1.75rem;text-align:center" onclick="startGame2()">
-        <div style="width:64px;height:64px;border-radius:1rem;background:var(--blu10);border:1px solid rgba(79,142,247,.2);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 1rem">⚡</div>
-        <h3 class="exo" style="font-size:1.15rem;font-weight:700;color:var(--blu);margin-bottom:.2rem">La Course</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.75rem">Time Attack</p>
-        <p style="font-size:.85rem;color:var(--tx2);line-height:1.55;margin-bottom:1rem">Elige la respuesta correcta antes de que expire el tiempo. 7 segundos por pregunta.</p>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--blu10);color:var(--blu)">Négation</span>
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--blu10);color:var(--blu)">Voix Passive</span>
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--blu10);color:var(--blu)">Subjonctif</span>
-        </div>
-        <button class="btn btn-blu" style="width:100%;padding:.7rem;border-radius:.75rem;font-size:.9rem">▶ INICIAR</button>
-      </div>
-
-      <!-- Game 3 -->
-      <div class="game-card" style="border-radius:1.25rem;padding:1.75rem;text-align:center" onclick="startGame3()">
-        <div style="width:64px;height:64px;border-radius:1rem;background:var(--red10);border:1px solid rgba(255,77,109,.2);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 1rem">💬</div>
-        <h3 class="exo" style="font-size:1.15rem;font-weight:700;color:var(--red);margin-bottom:.2rem">Le Débloqueur</h3>
-        <p style="font-size:.8rem;color:var(--tx2);margin-bottom:.75rem">Mission Dialogue</p>
-        <p style="font-size:.85rem;color:var(--tx2);line-height:1.55;margin-bottom:1rem">Elige la respuesta correcta en el chat para desbloquear al NPC y avanzar en la misión.</p>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--red10);color:var(--red)">Pragmatique</span>
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--red10);color:var(--red)">Subjonctif</span>
-          <span style="font-size:.7rem;padding:.2rem .6rem;border-radius:.4rem;background:var(--red10);color:var(--red)">Tourisme</span>
-        </div>
-        <button class="btn btn-red" style="width:100%;padding:.7rem;border-radius:.75rem;font-size:.9rem">▶ INICIAR</button>
-      </div>
-
-    </div>
-  </div>
-
-  <div style="text-align:center;margin-top:3rem;color:var(--tx3);font-size:.8rem">
-    LES PANAS LAB — Prototype pédagogique. · <span style="color:var(--grn)">La progression de l'A2 au B1</span> · Creado por Analis Carrizales
+  <div style="text-align:center;margin-top:4rem;color:var(--tx3);font-size:.95rem">
+    Les Panas LAB - 2026 - Made for Analis Carrizales
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════ -->
-<!--  GAME 1 — LE TRI COGNITIF                 -->
-<!-- ══════════════════════════════════════════ -->
-<section id="sec-g1" class="game-section hidden" style="padding-top:5rem">
-  <div style="max-width:850px;margin:0 auto;padding:2rem 1.5rem">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:1rem">
+<!-- ══════ GAME 1 ══════ -->
+<section id="sec-g1" class="game-section hidden" style="padding-top:5.5rem">
+  <div style="max-width:900px;margin:0 auto;padding:2rem 1.5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
       <div>
-        <h2 class="exo" style="font-size:1.6rem;font-weight:900;color:var(--grn)">🧩 LE TRI COGNITIF</h2>
-        <p id="g1-sub" style="font-size:.85rem;color:var(--tx2);margin-top:.2rem">Ronda 1 de 2</p>
+        <h2 class="exo" style="font-size:2rem;font-weight:900;color:var(--grn)">🧩 LE TRI COGNITIF</h2>
+        <p id="g1-sub" style="font-size:1.1rem;color:var(--tx2);margin-top:.35rem"></p>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem">
-        <div class="exo" style="font-size:1.3rem;font-weight:700;color:var(--grn)">★ <span id="g1-score">0</span></div>
-        <div style="display:flex;gap:.35rem" id="g1-dots"></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.6rem">
+        <div class="exo" style="font-size:1.8rem;font-weight:900;color:var(--grn)">★ <span id="g1-score">0</span></div>
+        <div style="display:flex;gap:.4rem" id="g1-dots"></div>
       </div>
     </div>
-
-    <!-- Instruction -->
-    <div style="background:var(--card);border:1px solid var(--brd);border-radius:.85rem;padding:.85rem 1.1rem;margin-bottom:.85rem;font-size:.875rem">
-      <span style="color:var(--grn)">📌 </span><span id="g1-inst" style="color:var(--tx2)"></span>
+    <div id="g1-bank-wrap" data-zone="bank"
+         ondragover="g1Over(event,this)" ondragleave="g1Leave(event,this)" ondrop="g1Drop(event,this)"
+         style="background:var(--surf);border:2.5px dashed var(--brd);border-radius:1.3rem;padding:1.3rem;margin-bottom:1.5rem;transition:all .2s">
+      <p class="exo" style="font-size:1rem;font-weight:700;color:var(--tx2);margin-bottom:1rem;letter-spacing:.05em">▬▬ BANCO DE PALABRAS ▬▬</p>
+      <div id="g1-bank" class="chips-area" style="display:flex;flex-wrap:wrap;gap:.7rem;min-height:55px"></div>
     </div>
-
-    <!-- Topic badge -->
-    <div style="margin-bottom:1rem">
-      <span id="g1-badge" class="exo" style="font-size:.72rem;font-weight:600;padding:.25rem .8rem;border-radius:.4rem;background:var(--grn10);color:var(--grn)"></span>
-    </div>
-
-    <!-- Word bank -->
-    <div id="g1-bank-wrap"
-         data-zone="bank"
-         ondragover="g1Over(event,this)"
-         ondragleave="g1Leave(event,this)"
-         ondrop="g1Drop(event,this)"
-         style="background:var(--surf);border:2px dashed var(--brd);border-radius:1rem;padding:1rem;margin-bottom:1.25rem;transition:all .2s">
-      <p class="exo" style="font-size:.72rem;font-weight:600;color:var(--tx3);margin-bottom:.7rem;letter-spacing:.05em">BANQUE DE MOTS — Arrastra los elementos abajo:</p>
-      <div id="g1-bank" class="chips-area" style="display:flex;flex-wrap:wrap;gap:.5rem;min-height:44px"></div>
-    </div>
-
-    <!-- Drop zones -->
-    <div id="g1-zones" class="g1-zones-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem"></div>
-
-    <!-- Actions -->
-    <div style="display:flex;gap:.75rem">
-      <button onclick="checkG1()" class="btn btn-grn" style="flex:1;padding:.8rem;border-radius:.85rem;font-size:.95rem">✓ Verificar Respuestas</button>
-      <button onclick="resetG1()" class="btn btn-ghost" style="padding:.8rem 1.2rem;border-radius:.85rem;font-size:.9rem">↺ Resetear</button>
+    <div id="g1-zones" class="g1-zones-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem"></div>
+    <div style="display:flex;gap:1rem">
+      <button onclick="checkG1()" class="btn btn-grn" style="flex:1;padding:1.1rem;border-radius:1rem;font-size:1.1rem">✓ VÉRIFIER</button>
+      <button onclick="resetG1()" class="btn btn-ghost" style="padding:1.1rem 1.5rem;border-radius:1rem">↺ RESET</button>
     </div>
   </div>
-
-  <!-- G1 MODAL -->
   <div id="g1-modal" class="modal-wrap hidden">
-    <div style="background:var(--card);border:1px solid var(--brd);border-radius:1.5rem;padding:2rem;max-width:520px;width:100%;max-height:85vh;overflow-y:auto">
-      <h3 class="exo" id="g1-m-title" style="font-size:1.5rem;font-weight:900;text-align:center;margin-bottom:.5rem"></h3>
-      <div id="g1-m-score" style="text-align:center;margin-bottom:1.5rem"></div>
-      <div id="g1-m-errors" style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem;max-height:220px;overflow-y:auto"></div>
-      <div style="display:flex;gap:.65rem">
-        <button id="g1-m-next" class="btn btn-grn" style="flex:1;padding:.8rem;border-radius:.85rem;font-size:.9rem"></button>
-        <button onclick="G1.closeModal()" class="btn btn-ghost" style="padding:.8rem 1.1rem;border-radius:.85rem;font-size:.9rem">Cerrar</button>
+    <div style="background:var(--card);border:2px solid var(--brd);border-radius:1.8rem;padding:2.5rem;max-width:550px;width:100%;max-height:85vh;overflow-y:auto">
+      <h3 class="exo" id="g1-m-title" style="font-size:1.8rem;font-weight:900;text-align:center;margin-bottom:.7rem"></h3>
+      <div id="g1-m-score" style="text-align:center;margin-bottom:1.8rem;font-size:1.1rem"></div>
+      <div id="g1-m-errors" style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.8rem;max-height:280px;overflow-y:auto"></div>
+      <div style="display:flex;gap:.8rem">
+        <button id="g1-m-next" class="btn btn-grn" style="flex:1;padding:1rem;border-radius:1rem;font-size:1rem"></button>
+        <button onclick="G1.closeModal()" class="btn btn-ghost" style="padding:1rem 1.3rem;border-radius:1rem">Fermer</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════ -->
-<!--  GAME 2 — LA COURSE                       -->
-<!-- ══════════════════════════════════════════ -->
-<section id="sec-g2" class="game-section hidden" style="padding-top:5rem">
-  <div style="max-width:640px;margin:0 auto;padding:2rem 1.5rem">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem">
+<!-- ══════ GAME 2 ══════ -->
+<section id="sec-g2" class="game-section hidden" style="padding-top:5.5rem">
+  <div style="max-width:700px;margin:0 auto;padding:2rem 1.5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
       <div>
-        <h2 class="exo" style="font-size:1.6rem;font-weight:900;color:var(--blu)">⚡ LA COURSE</h2>
-        <p style="font-size:.85rem;color:var(--tx2);margin-top:.2rem">
-          Pregunta <span id="g2-qn">1</span> de <span id="g2-qt">8</span>
-        </p>
+        <h2 class="exo" style="font-size:2rem;font-weight:900;color:var(--blu)">⚡ LA COURSE</h2>
+        <p style="font-size:1.1rem;color:var(--tx2);margin-top:.35rem">Pregunta <span id="g2-qn">1</span>/<span id="g2-qt">10</span></p>
       </div>
       <div style="text-align:right">
-        <div class="exo" style="font-size:1.3rem;font-weight:700;color:var(--grn)">★ <span id="g2-score">0</span></div>
-        <div style="font-size:.8rem;color:var(--tx2)">Racha: <span id="g2-streak">0</span> 🔥</div>
+        <div class="exo" style="font-size:1.8rem;font-weight:900;color:var(--grn)">★ <span id="g2-score">0</span></div>
+        <div style="font-size:1.1rem;color:var(--tx2)">🔥 <span id="g2-streak">0</span></div>
       </div>
     </div>
-
-    <!-- Progress bar -->
-    <div class="qprogress" style="margin-bottom:.35rem">
-      <div id="g2-progress" class="qprogress-fill" style="width:0%"></div>
-    </div>
-
-    <!-- Timer -->
-    <div style="background:var(--surf);border-radius:3px;overflow:hidden;margin-bottom:.4rem;height:5px">
+    <div class="qprogress" style="margin-bottom:.5rem"><div id="g2-progress" class="qprogress-fill" style="width:0%"></div></div>
+    <div style="background:var(--surf);border-radius:4px;overflow:hidden;margin-bottom:.6rem;height:7px">
       <div id="g2-tbar" class="tbar tbar-grn" style="width:100%;transition:none"></div>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--tx2);margin-bottom:1.25rem">
-      <span id="g2-topic" style="font-size:.75rem"></span>
-      <span id="g2-tlabel">7s</span>
+    <div style="display:flex;justify-content:space-between;font-size:.95rem;color:var(--tx2);margin-bottom:1.5rem">
+      <span id="g2-topic" style="font-weight:600"></span><span id="g2-tlabel" style="font-weight:700">7s</span>
     </div>
-
-    <!-- Question card -->
-    <div style="background:var(--card);border:1px solid var(--brd);border-radius:1.1rem;padding:1.5rem;margin-bottom:1.25rem;text-align:center">
-      <p id="g2-q" class="exo" style="font-size:1.15rem;font-weight:600;line-height:1.6;color:var(--tx1)"></p>
+    <div style="background:var(--card);border:2px solid var(--brd);border-radius:1.3rem;padding:2rem;margin-bottom:1.5rem;text-align:center">
+      <p id="g2-q" class="exo" style="font-size:1.4rem;font-weight:700;line-height:1.7;color:var(--tx1)"></p>
     </div>
-
-    <!-- Options -->
-    <div id="g2-opts" class="g2-opts-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1rem"></div>
-
-    <!-- Feedback -->
-    <div id="g2-fb" class="hidden" style="border-radius:.85rem;padding:1rem;font-size:.875rem;line-height:1.6"></div>
+    <div id="g2-opts" class="g2-opts-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.2rem"></div>
+    <div id="g2-fb" class="hidden" style="border-radius:1.2rem;padding:1.3rem;font-size:1.05rem;line-height:1.7;border:2px solid"></div>
   </div>
-
-  <!-- G2 MODAL -->
   <div id="g2-modal" class="modal-wrap hidden">
-    <div style="background:var(--card);border:1px solid var(--brd);border-radius:1.5rem;padding:2rem;max-width:560px;width:100%;max-height:85vh;overflow-y:auto">
-      <h3 class="exo" style="font-size:1.5rem;font-weight:900;text-align:center;margin-bottom:.5rem;color:var(--blu)">🏁 FIN DE LA COURSE</h3>
-      <div id="g2-m-score" style="text-align:center;margin-bottom:1.5rem"></div>
-      <div id="g2-m-errors" style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem"></div>
-      <div style="display:flex;gap:.65rem">
-        <button onclick="startGame2()" class="btn btn-blu" style="flex:1;padding:.8rem;border-radius:.85rem;font-size:.9rem">▶ REJUGAR</button>
-        <button onclick="showLanding()" class="btn btn-ghost" style="padding:.8rem 1.1rem;border-radius:.85rem;font-size:.9rem">Inicio</button>
+    <div style="background:var(--card);border:2px solid var(--brd);border-radius:1.8rem;padding:2.5rem;max-width:600px;width:100%;max-height:85vh;overflow-y:auto">
+      <h3 class="exo" style="font-size:1.8rem;font-weight:900;text-align:center;margin-bottom:.7rem;color:var(--blu)">🏁 RESULTAS</h3>
+      <div id="g2-m-score" style="text-align:center;margin-bottom:1.8rem;font-size:1.1rem"></div>
+      <div id="g2-m-errors" style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.8rem"></div>
+      <div style="display:flex;gap:.8rem">
+        <button onclick="startGame2()" class="btn btn-blu" style="flex:1;padding:1rem;border-radius:1rem;font-size:1rem">▶ REJUGAR</button>
+        <button onclick="showLanding()" class="btn btn-ghost" style="padding:1rem 1.3rem;border-radius:1rem">Menu</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════ -->
-<!--  GAME 3 — LE DÉBLOQUEUR                   -->
-<!-- ══════════════════════════════════════════ -->
-<section id="sec-g3" class="game-section hidden" style="padding-top:5rem">
-  <div style="max-width:640px;margin:0 auto;padding:2rem 1.5rem">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">
+<!-- ══════ GAME 3 ══════ -->
+<section id="sec-g3" class="game-section hidden" style="padding-top:5.5rem">
+  <div style="max-width:700px;margin:0 auto;padding:2rem 1.5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
       <div>
-        <h2 class="exo" style="font-size:1.6rem;font-weight:900;color:var(--red)">💬 LE DÉBLOQUEUR</h2>
-        <p style="font-size:.85rem;color:var(--tx2);margin-top:.2rem">Réservation Éco-Touristique</p>
+        <h2 class="exo" style="font-size:2rem;font-weight:900;color:var(--red)">💬 LE DÉBLOQUEUR</h2>
+        <p style="font-size:1.1rem;color:var(--tx2);margin-top:.35rem">Reserva Éco-Turismo</p>
       </div>
       <div style="text-align:right">
-        <div class="exo" style="font-size:1.3rem;font-weight:700;color:var(--grn)">★ <span id="g3-score">0</span></div>
-        <div style="display:flex;gap:.35rem;margin-top:.3rem;justify-content:flex-end" id="g3-dots"></div>
+        <div class="exo" style="font-size:1.8rem;font-weight:900;color:var(--grn)">★ <span id="g3-score">0</span></div>
+        <div style="display:flex;gap:.4rem;margin-top:.4rem;justify-content:flex-end" id="g3-dots"></div>
       </div>
     </div>
-
-    <!-- Context -->
-    <div style="background:var(--card);border:1px solid var(--brd);border-radius:.85rem;padding:.85rem 1.1rem;margin-bottom:1rem;font-size:.84rem;line-height:1.55">
-      <span style="color:var(--red)">🎯 Mission: </span>
-      <span style="color:var(--tx2)">Vous êtes à l'Agence Voyages Verts. Réservez un séjour éco-touristique en utilisant le registre <strong style="color:var(--tx1)">formel B2/C1</strong>.</span>
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;padding:.9rem 1rem;background:var(--surf);border-radius:1rem">
+      <div style="font-size:1.5rem">👩‍💼</div>
+      <div><div style="font-size:1.05rem;font-weight:700">Sophie Moreau</div><div style="font-size:.95rem;color:var(--tx2)">Agencia Voyages Verts</div></div>
+      <div style="margin-left:auto;width:10px;height:10px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn)"></div>
     </div>
-
-    <!-- NPC info -->
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
-      <div style="width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">👩‍💼</div>
-      <div>
-        <div style="font-size:.9rem;font-weight:600">Sophie Moreau</div>
-        <div style="font-size:.75rem;color:var(--tx2)">Agente de Voyages Verts</div>
-      </div>
-      <div style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--grn);box-shadow:0 0 7px var(--grn)"></div>
-    </div>
-
-    <!-- Chat area -->
-    <div id="g3-chat" style="background:var(--surf);border:1px solid var(--brd);border-radius:1.1rem;padding:1rem;min-height:180px;max-height:320px;overflow-y:auto;margin-bottom:1rem;display:flex;flex-direction:column;gap:.85rem"></div>
-
-    <!-- Options -->
-    <div id="g3-opts" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:.85rem"></div>
-
-    <!-- Feedback -->
-    <div id="g3-fb" class="hidden" style="border-radius:.85rem;padding:.9rem;font-size:.875rem;line-height:1.6"></div>
+    <div id="g3-chat" style="background:var(--surf);border:2px solid var(--brd);border-radius:1.3rem;padding:1.2rem;min-height:200px;max-height:340px;overflow-y:auto;margin-bottom:1.2rem;display:flex;flex-direction:column;gap:1rem"></div>
+    <div id="g3-opts" style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.2rem"></div>
+    <div id="g3-fb" class="hidden" style="border-radius:1.2rem;padding:1.3rem;font-size:1.05rem;line-height:1.7;border:2px solid"></div>
   </div>
-
-  <!-- G3 MODAL -->
   <div id="g3-modal" class="modal-wrap hidden">
-    <div style="background:var(--card);border:1px solid var(--brd);border-radius:1.5rem;padding:2rem;max-width:540px;width:100%;max-height:85vh;overflow-y:auto">
-      <h3 class="exo" style="font-size:1.5rem;font-weight:900;text-align:center;margin-bottom:.5rem;color:var(--grn)">🎉 MISSION ACCOMPLIE !</h3>
-      <div id="g3-m-score" style="text-align:center;margin-bottom:1.25rem"></div>
-      <div id="g3-m-summary" style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.5rem"></div>
-      <div style="display:flex;gap:.65rem">
-        <button onclick="startGame3()" class="btn btn-red" style="flex:1;padding:.8rem;border-radius:.85rem;font-size:.9rem">▶ REJOUER</button>
-        <button onclick="showLanding()" class="btn btn-ghost" style="padding:.8rem 1.1rem;border-radius:.85rem;font-size:.9rem">Inicio</button>
+    <div style="background:var(--card);border:2px solid var(--brd);border-radius:1.8rem;padding:2.5rem;max-width:580px;width:100%;max-height:85vh;overflow-y:auto">
+      <h3 class="exo" style="font-size:1.8rem;font-weight:900;text-align:center;margin-bottom:.7rem;color:var(--grn)">🎉 ¡LO HICISTE!</h3>
+      <div id="g3-m-score" style="text-align:center;margin-bottom:1.5rem;font-size:1.1rem"></div>
+      <div id="g3-m-summary" style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.8rem;max-height:240px;overflow-y:auto"></div>
+      <div style="display:flex;gap:.8rem">
+        <button onclick="startGame3()" class="btn btn-red" style="flex:1;padding:1rem;border-radius:1rem;font-size:1rem">▶ REJUGAR</button>
+        <button onclick="showLanding()" class="btn btn-ghost" style="padding:1rem 1.3rem;border-radius:1rem">Menu</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- ══════ GAME 4 — FLIP FLOP ADVERBIOS ══════ -->
+<section id="sec-g4" class="game-section hidden" style="padding-top:5.5rem">
+  <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+      <div>
+        <h2 class="exo" style="font-size:2rem;font-weight:900;color:var(--yel)">🔄 FLIP FLOP ADVERBIOS</h2>
+        <p id="g4-sub" style="font-size:1.1rem;color:var(--tx2);margin-top:.35rem"></p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.6rem">
+        <div class="exo" style="font-size:1.8rem;font-weight:900;color:var(--grn)">★ <span id="g4-score">0</span></div>
+        <div style="display:flex;gap:.4rem" id="g4-dots"></div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:2px solid var(--brd);border-radius:1.3rem;padding:1.8rem;margin-bottom:1.8rem;text-align:center">
+      <p class="exo" id="g4-q" style="font-size:1.8rem;font-weight:800;color:var(--tx1);margin-bottom:.7rem"></p>
+      <p style="font-size:1rem;color:var(--tx2);font-weight:600" id="g4-hint"></p>
+    </div>
+
+    <div 
+      class="g4-cards-grid" 
+      id="g4-cards"
+      style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:1rem;
+      margin-bottom:1.8rem;
+      ">
+    </div>
+
+    <div style="display:flex;gap:1rem">
+      <button onclick="resetG4()" class="btn btn-ghost" style="flex:1;padding:1.1rem;border-radius:1rem;font-size:1.05rem">↺ SUIVANT</button>
+      <button onclick="showLanding()" class="btn btn-ghost" style="flex:1;padding:1.1rem;border-radius:1rem;font-size:1.05rem">← MENU</button>
+    </div>
+  </div>
+
+  <div id="g4-modal" class="modal-wrap hidden">
+    <div style="background:var(--card);border:2px solid var(--brd);border-radius:1.8rem;padding:2.5rem;max-width:550px;width:100%;max-height:85vh;overflow-y:auto">
+      <h3 class="exo" id="g4-m-title" style="font-size:1.8rem;font-weight:900;text-align:center;margin-bottom:.7rem"></h3>
+      <div id="g4-m-score" style="text-align:center;margin-bottom:1.8rem;font-size:1.1rem"></div>
+      <div id="g4-m-feedback" style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.8rem;max-height:280px;overflow-y:auto"></div>
+      <div style="display:flex;gap:.8rem">
+        <button id="g4-m-next" class="btn btn-grn" style="flex:1;padding:1rem;border-radius:1rem;font-size:1rem"></button>
+        <button onclick="G4.closeModal()" class="btn btn-ghost" style="padding:1rem 1.3rem;border-radius:1rem">Fermer</button>
+      </div>
+    </div>
+  </div>
+</section>
 <script>
 
-/* ─────────────────────────────────────────────
-   GLOBAL
-───────────────────────────────────────────── */
-let totalPts = 0;
-
-function addPts(n) {
-  totalPts += n;
-  const el = document.getElementById('nav-pts-val');
-  if (el) el.textContent = totalPts;
-  document.getElementById('nav-pts').classList.remove('hidden');
-}
-
-function showLanding() {
-  if (G2.timer) clearInterval(G2.timer);
-  document.querySelectorAll('.game-section').forEach(s => s.classList.add('hidden'));
-  document.getElementById('sec-landing').classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function showSection(id) {
-  if (G2.timer) clearInterval(G2.timer);
-  document.querySelectorAll('.game-section').forEach(s => s.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+/* ════════════════ GLOBAL ════════════════ */
+let totalPts=0;
+function addPts(n){totalPts+=n;document.getElementById('nav-pts-val').textContent=totalPts;document.getElementById('nav-pts').classList.remove('hidden');}
+function showLanding(){if(G2.timer)clearInterval(G2.timer);document.querySelectorAll('.game-section').forEach(s=>s.classList.add('hidden'));document.getElementById('sec-landing').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});}
+function showSection(id){if(G2.timer)clearInterval(G2.timer);document.querySelectorAll('.game-section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});}
+function shuffle(a){return[...a].sort(()=>Math.random()-.5)}
 
 /* Stars */
-(function(){
-  const bg = document.getElementById('stars-bg');
-  for (let i = 0; i < 70; i++) {
-    const s = document.createElement('div');
-    const sz = Math.random() * 2 + 1;
-    s.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;
-      background:rgba(255,255,255,${Math.random()*.45+.08});
-      left:${Math.random()*100}%;top:${Math.random()*100}%;
-      animation:twinkle ${Math.random()*3+2}s ease-in-out infinite;
-      animation-delay:${Math.random()*4}s`;
-    bg.appendChild(s);
-  }
-})();
+(function(){const bg=document.getElementById('stars-bg');for(let i=0;i<80;i++){const s=document.createElement('div');const sz=Math.random()*2.5+1;s.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:rgba(255,255,255,${Math.random()*.5+.08});left:${Math.random()*100}%;top:${Math.random()*100}%;animation:twinkle ${Math.random()*3.5+2}s ease-in-out infinite;animation-delay:${Math.random()*5}s`;bg.appendChild(s);}})();
 
-function shuffle(a) { return [...a].sort(() => Math.random() - .5); }
-
-/* ════════════════════════════════════════
-   TOUCH DRAG SYSTEM — Game 1 móvil
-   El HTML5 Drag & Drop no funciona en
-   iOS/Android. Este sistema usa touch
-   events nativos con ghost visual.
-════════════════════════════════════════ */
+/* ════════════════ TOUCH DRAG SYSTEM ════════════════ */
 let tEl=null,tGhost=null,tOX=0,tOY=0,tLastZ=null;
-
 function addTouchDrag(el){
-  /* Evitar duplicar listeners */
   el.removeEventListener('touchstart',onTS);
   el.addEventListener('touchstart',onTS,{passive:false});
 }
-
 function onTS(e){
   e.preventDefault();
   const t=e.touches[0];
   tEl=e.currentTarget;
   G1.dragEl=tEl;
   const r=tEl.getBoundingClientRect();
-  tOX=t.clientX-r.left; tOY=t.clientY-r.top;
+  tOX=t.clientX-r.left;tOY=t.clientY-r.top;
   tGhost=document.getElementById('touch-ghost');
   tGhost.textContent=tEl.dataset.word;
-  tGhost.style.left=r.left+'px'; tGhost.style.top=r.top+'px';
+  tGhost.style.left=r.left+'px';tGhost.style.top=r.top+'px';
   tGhost.classList.remove('hidden');
   tEl.classList.add('dragging');
   document.addEventListener('touchmove',onTM,{passive:false});
   document.addEventListener('touchend',onTE,{passive:false});
 }
-
 function onTM(e){
   e.preventDefault();
   const t=e.touches[0];
@@ -664,7 +658,6 @@ function onTM(e){
   if(tLastZ&&tLastZ!==zone)tLastZ.classList.remove('over');
   if(zone){zone.classList.add('over');tLastZ=zone;}else tLastZ=null;
 }
-
 function onTE(e){
   e.preventDefault();
   const t=e.changedTouches[0];
@@ -681,9 +674,25 @@ function onTE(e){
   tEl=null;tLastZ=null;
 }
 
-/* ─────────────────────────────────────────────
-   GAME 1 DATA
-───────────────────────────────────────────── */
+/* ════════════════ THEME TOGGLE ════════════════ */
+function toggleTheme(){
+  document.body.classList.toggle('light-theme');
+  const icon=document.getElementById('theme-icon');
+  const isLight=document.body.classList.contains('light-theme');
+  icon.textContent=isLight?'☀️':'🌙';
+  localStorage.setItem('delflab-theme',isLight?'light':'dark');
+}
+
+/* Cargar tema guardado */
+window.addEventListener('load',()=>{
+  const saved=localStorage.getItem('delflab-theme');
+  if(saved==='light'){
+    document.body.classList.add('light-theme');
+    document.getElementById('theme-icon').textContent='☀️';
+  }
+});
+
+/* ════════════════ GAME 1 DATA ════════════════ */
 const G1_ROUNDS=[
   {
     sub:"Auxiliaire du Passé Composé · Ronda 1 de 9",
@@ -835,45 +844,34 @@ const G1_ROUNDS=[
   }
 ];
 
-/* ─────────────────────────────────────────────
-   GAME 1 LOGIC
-───────────────────────────────────────────── */
+/* ════════════════ GAME 1 LOGIC ════════════════ */
 const G1={
   round:0,score:0,dragEl:null,errors:[],
-
   start(){this.round=0;this.score=0;this.errors=[];this.dragEl=null;showSection('sec-g1');this.render();},
-
   render(){
     const rd=G1_ROUNDS[this.round];
     document.getElementById('g1-sub').textContent=rd.sub;
-    document.getElementById('g1-inst').textContent=rd.inst;
-    document.getElementById('g1-badge').textContent=rd.badge;
     document.getElementById('g1-score').textContent=this.score;
     document.getElementById('g1-dots').innerHTML=G1_ROUNDS.map((_,i)=>
       `<div class="dot ${i===this.round?'dot-on':i<this.round?'dot-done':''}"></div>`).join('');
-
     const bank=document.getElementById('g1-bank');
     bank.innerHTML=shuffle(rd.items).map(it=>
       `<div class="drag-chip" draggable="true" data-word="${it.w}" data-correct="${it.c}"
-        style="padding:.6rem 1.05rem;border-radius:.65rem;font-size:1rem;font-family:'Exo 2',sans-serif;font-weight:700"
+        style="padding:.7rem 1.2rem;border-radius:.75rem;font-size:1.1rem"
         ondragstart="G1.ds(event,this)" ondragend="G1.de(event,this)">${it.w}</div>`
     ).join('');
-    /* ← Adjuntar touch drag a cada chip nuevo */
     bank.querySelectorAll('.drag-chip').forEach(chip=>addTouchDrag(chip));
-
     document.getElementById('g1-zones').innerHTML=rd.cats.map(cat=>
       `<div class="drop-zone" data-zone="${cat.id}"
-        style="border-color:${cat.color}30;background:${cat.color}07;padding:.85rem"
+        style="border-color:${cat.color}40;background:${cat.color}08;padding:1rem"
         ondragover="g1Over(event,this)" ondragleave="g1Leave(event,this)" ondrop="g1Drop(event,this)">
-        <div class="exo" style="font-size:.92rem;font-weight:700;color:${cat.color};text-align:center;margin-bottom:.65rem">${cat.label}</div>
-        <div class="chips-area" style="display:flex;flex-wrap:wrap;gap:.5rem;min-height:64px"></div>
+        <div class="exo" style="font-size:1.1rem;font-weight:800;color:${cat.color};text-align:center;margin-bottom:.8rem">${cat.label}</div>
+        <div class="chips-area" style="display:flex;flex-wrap:wrap;gap:.6rem;min-height:75px"></div>
       </div>`
     ).join('');
   },
-
   ds(e,el){this.dragEl=el;e.dataTransfer.setData('text/plain',el.dataset.word);setTimeout(()=>el.classList.add('dragging'),0);},
   de(e,el){el.classList.remove('dragging');},
-
   drop(e,zone){
     e.preventDefault();
     zone.classList.remove('over');
@@ -883,9 +881,8 @@ const G1={
     el.style.borderColor='';el.style.background='';el.style.color='';
     const area=zone.querySelector('.chips-area')||zone;
     area.appendChild(el);
-    addTouchDrag(el); /* re-bind tras mover nodo */
+    addTouchDrag(el);
   },
-
   check(){
     const rd=G1_ROUNDS[this.round];
     const errs=[];let ok=0;
@@ -894,66 +891,30 @@ const G1={
       if(!chip)return;
       const zid=(chip.closest('[data-zone]')||{}).dataset?.zone||'bank';
       if(zid===it.c){ok++;chip.classList.add('ok','pop-in');}
-      else{
-        chip.classList.add('err','shake');
-        setTimeout(()=>chip.classList.remove('shake'),500);
-        errs.push({w:it.w,hint:it.hint});
-      }
+      else{chip.classList.add('err','shake');setTimeout(()=>chip.classList.remove('shake'),500);}
     });
-    this.errors.push(...errs);
     const pts=ok*10;this.score+=pts;addPts(pts);
     document.getElementById('g1-score').textContent=this.score;
-    setTimeout(()=>this.showModal(ok,rd.items.length,errs),550);
+    setTimeout(()=>this.showModal(ok,rd.items.length),550);
   },
-
-  showModal(ok,total,errs){
-    const last=this.round>=G1_ROUNDS.length-1;
+  showModal(ok,total){
     const pct=Math.round(ok/total*100);
     const col=pct>=80?'var(--grn)':pct>=50?'var(--yel)':'var(--red)';
     const emo=pct>=80?'🏆':pct>=50?'👍':'💪';
-    document.getElementById('g1-m-title').textContent=`${emo} ${ok}/${total} correctos — ${pct}%`;
+    document.getElementById('g1-m-title').textContent=`${emo} ${ok}/${total} · ${pct}%`;
     document.getElementById('g1-m-title').style.color=col;
     document.getElementById('g1-m-score').innerHTML=
-      `<div class="exo" style="font-size:2.8rem;font-weight:900;color:${col}">+${ok*10} pts</div>
-       <div style="font-size:.95rem;color:var(--tx2);margin-top:.2rem">Score acumulado: ${this.score}</div>`;
-    document.getElementById('g1-m-errors').innerHTML=errs.length===0
-      ?`<div style="text-align:center;padding:1rem;color:var(--grn)">🎉 ¡Ronda perfecta!</div>`
-      :`<p class="exo" style="font-size:.9rem;font-weight:700;color:var(--yel);margin-bottom:.3rem">📝 REVISIÓN:</p>
-        ${errs.map(e=>`<div style="background:var(--red10);border:1px solid rgba(255,77,109,.2);border-radius:.75rem;padding:.85rem;font-size:.92rem">
-          <div style="font-weight:700;color:var(--red);font-family:'Exo 2',sans-serif">« ${e.w} »</div>
-          <div style="color:var(--tx2);margin-top:.25rem">💡 ${e.hint}</div></div>`).join('')}`;
+      `<div class="exo" style="font-size:3rem;font-weight:900;color:${col}">+${ok*10} pts</div>
+       <div style="color:var(--tx2)">Total: <strong>${this.score}</strong></div>`;
+    document.getElementById('g1-m-errors').innerHTML=``;
     const btn=document.getElementById('g1-m-next');
-    if(last){btn.textContent='🏁 Ver Resumen Final';btn.onclick=()=>this.finalSummary();}
-    else{btn.textContent='▶ Siguiente Ronda';btn.onclick=()=>{this.round++;document.getElementById('g1-modal').classList.add('hidden');this.render();};}
+    const last=this.round>=G1_ROUNDS.length-1;
+    if(last){btn.textContent='🏁 FIN';btn.onclick=()=>{showLanding();document.getElementById('g1-modal').classList.add('hidden');};}
+    else{btn.textContent='▶ SUIVANT';btn.onclick=()=>{this.round++;document.getElementById('g1-modal').classList.add('hidden');this.render();};}
     document.getElementById('g1-modal').classList.remove('hidden');
-  },
-
-  finalSummary(){
-    const total=G1_ROUNDS.reduce((s,r)=>s+r.items.length,0);
-    const ok=this.score/10;const pct=Math.round(ok/total*100);
-    const col=pct>=80?'var(--grn)':pct>=50?'var(--yel)':'var(--red)';
-    document.getElementById('g1-m-title').textContent='🏁 RÉSUMÉ FINAL';
-    document.getElementById('g1-m-title').style.color='var(--grn)';
-    document.getElementById('g1-m-score').innerHTML=`
-      <div class="exo" style="font-size:3rem;font-weight:900;color:${col}">${pct}%</div>
-      <div style="color:var(--tx2);margin-bottom:1rem;font-size:.95rem">${ok}/${total} correctos · ${this.score} pts</div>
-      <div style="background:var(--card);border:1px solid var(--brd);border-radius:.9rem;padding:1rem;text-align:left;font-size:.92rem;line-height:1.7">
-        <p style="color:var(--grn);font-weight:700;margin-bottom:.5rem">🧠 RAPPEL GRAMMATICAL:</p>
-        <p style="color:var(--tx2)">Verbos con <strong style="color:var(--blu)">ÊTRE</strong>: <em>aller, venir, partir, naître, mourir, rester, tomber, entrer, sortir, monter, descendre, arriver, rentrer</em> + verbos pronominales.<br><br>
-        El participe passé <strong style="color:var(--grn)">concuerda con el sujeto</strong>:<br>
-        <em>Elle est partie · Ils sont venus · Nous sommes allées</em></p>
-      </div>`;
-    document.getElementById('g1-m-errors').innerHTML=this.errors.length===0
-      ?`<div style="text-align:center;color:var(--grn);font-size:.95rem">🎉 ¡Cero errores!</div>`
-      :this.errors.map(e=>`<div style="background:var(--red10);border:1px solid rgba(255,77,109,.2);border-radius:.75rem;padding:.8rem;font-size:.92rem">
-          <div style="font-weight:700;color:var(--red);font-family:'Exo 2',sans-serif">« ${e.w} »</div>
-          <div style="color:var(--tx2);margin-top:.25rem">💡 ${e.hint}</div></div>`).join('');
-    document.getElementById('g1-m-next').textContent='▶ REJUGAR';
-    document.getElementById('g1-m-next').onclick=()=>startGame1();
   },
   closeModal(){document.getElementById('g1-modal').classList.add('hidden');}
 };
-
 function g1Over(e,z){e.preventDefault();z.classList.add('over');}
 function g1Leave(e,z){if(!z.contains(e.relatedTarget))z.classList.remove('over');}
 function g1Drop(e,z){G1.drop(e,z);}
@@ -961,9 +922,7 @@ function startGame1(){document.getElementById('g1-modal').classList.add('hidden'
 function checkG1(){G1.check();}
 function resetG1(){G1.render();}
 
-/* ─────────────────────────────────────────────
-   GAME 2 DATA
-───────────────────────────────────────────── */
+/* ════════════════ GAME 2 DATA ════════════════ */
 const G2_DATA=[
   {q:"Depuis son régime, elle ne mange ___ de sucre.",opts:["jamais","plus","rien","personne"],ans:1,topic:"Négation: NE...PLUS",
    expl:"NE...PLUS = cessation d'une action habituelle. Avant: elle mangeait du sucre. Maintenant: elle n'en mange PLUS."},
@@ -986,169 +945,86 @@ const G2_DATA=[
   {q:"L'écotourisme favorise ___ entre les communautés locales et les visiteurs.",opts:["l'échange","l'échangement","l'échanger","l'échangeant"],ans:0,topic:"Nominalisation — Verbo → Sustantivo",
    expl:"NOMINALISATION: l'échange (sustantivo) de l'infinitivo ÉCHANGER. Sufijo zéro o -age. Crucial en prensa/blogs."}
 ];
-
-/* ─────────────────────────────────────────────
-   GAME 2 LOGIC
-───────────────────────────────────────────── */
-const G2 = {
-  qi: 0, score: 0, streak: 0,
-  timer: null, timerVal: 14, elapsed: 0,
-  errors: [], answered: false,
-
-  start() {
-    if (this.timer) clearInterval(this.timer);
-    Object.assign(this, { qi:0, score:0, streak:0, timer:null, timerVal:14, elapsed:0, errors:[], answered:false });
-    document.getElementById('g2-qt').textContent = G2_DATA.length;
+/* ════════════════ GAME 2 LOGIC ════════════════ */
+const G2={
+  qi:0,score:0,streak:0,timer:null,timerVal:7,elapsed:0,errors:[],answered:false,
+  start(){
+    if(this.timer)clearInterval(this.timer);
+    Object.assign(this,{qi:0,score:0,streak:0,timer:null,timerVal:7,elapsed:0,errors:[],answered:false});
     document.getElementById('g2-modal').classList.add('hidden');
     document.getElementById('g2-fb').classList.add('hidden');
-    showSection('sec-g2');
-    this.render();
+    showSection('sec-g2');this.render();
   },
-
-  render() {
-    if (this.qi >= G2_DATA.length) { this.summary(); return; }
-    const q = G2_DATA[this.qi];
-    this.answered = false;
-
-    document.getElementById('g2-qn').textContent = this.qi + 1;
-    document.getElementById('g2-score').textContent = this.score;
-    document.getElementById('g2-streak').textContent = this.streak;
-    document.getElementById('g2-topic').textContent = `📚 ${q.topic}`;
-    document.getElementById('g2-q').textContent = q.q;
+  render(){
+    if(this.qi>=G2_DATA.length){this.summary();return;}
+    const q=G2_DATA[this.qi];this.answered=false;
+    document.getElementById('g2-qn').textContent=this.qi+1;
+    document.getElementById('g2-score').textContent=this.score;
+    document.getElementById('g2-streak').textContent=this.streak;
+    document.getElementById('g2-topic').textContent=`📚 ${q.topic}`;
+    document.getElementById('g2-q').textContent=q.q;
     document.getElementById('g2-fb').classList.add('hidden');
-
-    const pct = Math.round(this.qi / G2_DATA.length * 100);
-    document.getElementById('g2-progress').style.width = pct + '%';
-
-    document.getElementById('g2-opts').innerHTML = q.opts.map((opt, i) =>
-      `<button class="g2-opt" onclick="G2.answer(${i})">
-        <span style="color:var(--tx2);margin-right:.5rem">${['A','B','C','D'][i]}.</span>${opt}
-       </button>`
+    document.getElementById('g2-progress').style.width=(this.qi/G2_DATA.length*100)+'%';
+    document.getElementById('g2-opts').innerHTML=q.opts.map((opt,i)=>
+      `<button class="g2-opt" onclick="G2.answer(${i})"><span style="color:var(--tx2);margin-right:.6rem;font-size:1.05rem">${['A','B','C','D'][i]}.</span>${opt}</button>`
     ).join('');
-
     this.startTimer();
   },
-
-  startTimer() {
-    if (this.timer) clearInterval(this.timer);
-    this.elapsed = 0;
-    const bar = document.getElementById('g2-tbar');
-    bar.className = 'tbar tbar-grn';
-    bar.style.transition = 'none';
-    bar.style.width = '100%';
-
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      bar.style.transition = `width ${this.timerVal}s linear`;
-      bar.style.width = '0%';
-    }));
-
-    this.timer = setInterval(() => {
-      this.elapsed++;
-      const rem = this.timerVal - this.elapsed;
-      document.getElementById('g2-tlabel').textContent = rem + 's';
-      if (rem <= 2) bar.className = 'tbar tbar-red';
-      else if (rem <= 4) bar.className = 'tbar tbar-yel';
-      if (this.elapsed >= this.timerVal && !this.answered) {
-        clearInterval(this.timer);
-        this.timeout();
-      }
-    }, 1000);
+  startTimer(){
+    if(this.timer)clearInterval(this.timer);
+    this.elapsed=0;
+    const bar=document.getElementById('g2-tbar');
+    bar.className='tbar tbar-grn';bar.style.transition='none';bar.style.width='100%';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{bar.style.transition=`width ${this.timerVal}s linear`;bar.style.width='0%';}));
+    this.timer=setInterval(()=>{
+      this.elapsed++;const rem=this.timerVal-this.elapsed;
+      document.getElementById('g2-tlabel').textContent=rem+'s';
+      if(rem<=2)bar.className='tbar tbar-red';else if(rem<=4)bar.className='tbar tbar-yel';
+      if(this.elapsed>=this.timerVal&&!this.answered){clearInterval(this.timer);this.timeout();}
+    },1000);
   },
-
-  answer(idx) {
-    if (this.answered) return;
-    this.answered = true;
-    clearInterval(this.timer);
-    const q = G2_DATA[this.qi];
-    const ok = idx === q.ans;
-
-    document.querySelectorAll('.g2-opt').forEach((btn, i) => {
-      if (i === q.ans) btn.classList.add('opt-ok');
-      else if (i === idx && !ok) btn.classList.add('opt-err');
+  answer(idx){
+    if(this.answered)return;this.answered=true;clearInterval(this.timer);
+    const q=G2_DATA[this.qi];const ok=idx===q.ans;
+    document.querySelectorAll('.g2-opt').forEach((btn,i)=>{
+      if(i===q.ans)btn.classList.add('opt-ok');
+      else if(i===idx&&!ok)btn.classList.add('opt-err');
       else btn.classList.add('opt-dim');
     });
-
-    const fb = document.getElementById('g2-fb');
-    fb.classList.remove('hidden');
-
-    if (ok) {
-      const bonus = this.streak * 5;
-      const pts = 15 + bonus;
-      this.score += pts;
-      this.streak++;
-      addPts(15);
-      fb.className = 'fb-ok';
-      fb.style.borderRadius = '.85rem'; fb.style.padding = '1rem';
-      fb.innerHTML = `<span style="color:var(--grn);font-weight:700">✓ CORRECT !${this.streak>1?' 🔥 Racha ×'+this.streak:''} +${pts} pts</span><br>
-        <span style="color:var(--tx2);font-size:.85rem">${q.expl}</span>`;
-    } else {
-      this.streak = 0;
-      this.errors.push({ q: q.q, got: q.opts[idx], need: q.opts[q.ans], expl: q.expl, topic: q.topic });
-      fb.className = 'fb-err';
-      fb.style.borderRadius = '.85rem'; fb.style.padding = '1rem';
-      fb.innerHTML = `<span style="color:var(--red);font-weight:700">✗ Incorrect.</span> Bonne réponse: <strong style="color:var(--grn)">${q.opts[q.ans]}</strong><br>
-        <span style="color:var(--tx2);font-size:.85rem">${q.expl}</span>`;
-    }
-
-    document.getElementById('g2-score').textContent = this.score;
-    document.getElementById('g2-streak').textContent = this.streak;
-    setTimeout(() => { this.qi++; this.render(); }, 2600);
+    const fb=document.getElementById('g2-fb');fb.classList.remove('hidden');
+    if(ok){const pts=15+this.streak*5;this.score+=pts;this.streak++;addPts(15);
+      fb.className='fb-ok';
+      fb.innerHTML=`<span style="color:var(--grn);font-weight:800;font-size:1.15rem">✓ ¡CORRECTO! +${pts} pts 🔥</span>`;
+    }else{this.streak=0;this.errors.push(q);
+      fb.className='fb-err';
+      fb.innerHTML=`<span style="color:var(--red);font-weight:800;font-size:1.15rem">✗ Error</span>. Respuesta: <strong style="color:var(--grn)">${q.opts[q.ans]}</strong>`;}
+    document.getElementById('g2-score').textContent=this.score;
+    setTimeout(()=>{this.qi++;this.render();},2700);
   },
-
-  timeout() {
-    this.answered = true;
-    const q = G2_DATA[this.qi];
-    this.streak = 0;
-    this.errors.push({ q: q.q, got: '⏱ Sin respuesta', need: q.opts[q.ans], expl: q.expl, topic: q.topic });
-
-    document.querySelectorAll('.g2-opt').forEach((btn, i) => {
-      if (i === q.ans) btn.classList.add('opt-ok');
-      else btn.classList.add('opt-dim');
-    });
-
-    const fb = document.getElementById('g2-fb');
-    fb.classList.remove('hidden');
-    fb.className = 'fb-timeout';
-    fb.style.borderRadius = '.85rem'; fb.style.padding = '1rem';
-    fb.innerHTML = `<span style="color:var(--yel);font-weight:700">⏱ Temps écoulé !</span> Bonne réponse: <strong style="color:var(--grn)">${q.opts[q.ans]}</strong><br>
-      <span style="color:var(--tx2);font-size:.85rem">${q.expl}</span>`;
-
-    setTimeout(() => { this.qi++; this.render(); }, 2600);
+  timeout(){
+    this.answered=true;const q=G2_DATA[this.qi];this.streak=0;
+    this.errors.push(q);
+    document.querySelectorAll('.g2-opt').forEach((btn,i)=>{if(i===q.ans)btn.classList.add('opt-ok');else btn.classList.add('opt-dim');});
+    const fb=document.getElementById('g2-fb');fb.classList.remove('hidden');
+    fb.className='fb-timeout';
+    fb.innerHTML=`<span style="color:var(--yel);font-weight:800;font-size:1.15rem">⏱ ¡Se acabó!</span> Respuesta: <strong style="color:var(--grn)">${q.opts[q.ans]}</strong>`;
+    setTimeout(()=>{this.qi++;this.render();},2700);
   },
-
-  summary() {
+  summary(){
     clearInterval(this.timer);
-    const total = G2_DATA.length;
-    const correct = total - this.errors.length;
-    const pct = Math.round(correct / total * 100);
-    const col = pct >= 80 ? 'var(--grn)' : pct >= 50 ? 'var(--yel)' : 'var(--red)';
-    const emoji = pct >= 80 ? '🏆' : pct >= 50 ? '🎯' : '💪';
-
-    document.getElementById('g2-m-score').innerHTML =
-      `<div class="exo" style="font-size:3rem;font-weight:900;color:${col}">${emoji} ${pct}%</div>
-       <div style="color:var(--tx2)">${correct}/${total} correctas · ${this.score} pts</div>`;
-
-    const eEl = document.getElementById('g2-m-errors');
-    eEl.innerHTML = this.errors.length === 0
-      ? `<div style="text-align:center;padding:1rem;color:var(--grn)">🎉 ¡Curso complet sin erreurs! Niveau C1 confirmé.</div>`
-      : `<p class="exo" style="font-size:.8rem;font-weight:700;color:var(--yel);margin-bottom:.35rem">📝 REVISIÓN DE ERRORES:</p>
-         ${this.errors.map(e=>`
-          <div style="background:var(--red10);border:1px solid rgba(255,77,109,.2);border-radius:.7rem;padding:.8rem;font-size:.82rem">
-            <div style="font-weight:600;color:var(--tx1);margin-bottom:.3rem">${e.q}</div>
-            <div><span style="color:var(--red)">✗ Tu: ${e.got}</span> → <span style="color:var(--grn)">✓ ${e.need}</span></div>
-            <div style="color:var(--tx2);margin-top:.35rem">${e.expl}</div>
-            <div style="margin-top:.4rem"><span style="font-size:.72rem;padding:.2rem .6rem;border-radius:.35rem;background:var(--blu10);color:var(--blu)">${e.topic}</span></div>
-          </div>`).join('')}`;
-
+    const total=G2_DATA.length;const ok=total-this.errors.length;const pct=Math.round(ok/total*100);
+    const col=pct>=80?'var(--grn)':pct>=50?'var(--yel)':'var(--red)';
+    const emo=pct>=80?'🏆':pct>=50?'🎯':'💪';
+    document.getElementById('g2-m-score').innerHTML=
+      `<div class="exo" style="font-size:3rem;font-weight:900;color:${col}">${emo} ${pct}%</div>
+       <div style="color:var(--tx2)">${ok}/${total} correctas · <strong>${this.score} pts</strong></div>`;
+    document.getElementById('g2-m-errors').innerHTML=this.errors.length===0?`<div style="text-align:center;color:var(--grn);font-weight:700;padding:1rem">🎉 ¡ERES UNA MÁQUINA!</div>`:``;
     document.getElementById('g2-modal').classList.remove('hidden');
   }
 };
+function startGame2(){G2.start();}
 
-function startGame2() { G2.start(); }
-
-/* ─────────────────────────────────────────────
-   GAME 3 DATA
-───────────────────────────────────────────── */
+/* ════════════════ GAME 3 DATA ════════════════ */
 const G3_STEPS=[
   {npc:"Bonjour et bienvenue à l'Agence Voyages Verts ! Que puis-je faire pour vous aujourd'hui ?",
    opts:[
@@ -1212,158 +1088,345 @@ const G3_STEPS=[
   ]}
 ];
 
-/* ─────────────────────────────────────────────
-   GAME 3 LOGIC
-───────────────────────────────────────────── */
-const G3 = {
-  step: 0, score: 0,
-  history: [],  // {type, text, ok, tag}
-  locked: false,
-
-  start() {
-    Object.assign(this, { step:0, score:0, history:[], locked:false });
-    document.getElementById('g3-modal').classList.add('hidden');
+/* ════════════════ GAME 3 LOGIC ════════════════ */
+const G3={
+  step:0,score:0,history:[],locked:false,
+  start(){Object.assign(this,{step:0,score:0,history:[],locked:false});document.getElementById('g3-modal').classList.add('hidden');document.getElementById('g3-fb').classList.add('hidden');document.getElementById('g3-score').textContent='0';showSection('sec-g3');this.renderDots();this.renderStep();},
+  renderDots(){document.getElementById('g3-dots').innerHTML=G3_STEPS.map((_,i)=>`<div class="dot ${i===this.step?'dot-on':i<this.step?'dot-done':''}"></div>`).join('');},
+  renderStep(){
+    if(this.step>=G3_STEPS.length){this.summary();return;}
+    const st=G3_STEPS[this.step];
+    this.history.push({type:'npc',text:st.npc});
+    this.renderChat();this.locked=false;
     document.getElementById('g3-fb').classList.add('hidden');
-    document.getElementById('g3-score').textContent = '0';
-    showSection('sec-g3');
-    this.renderDots();
-    this.renderStep();
-  },
-
-  renderDots() {
-    document.getElementById('g3-dots').innerHTML = G3_STEPS.map((_,i) =>
-      `<div class="dot ${i===this.step?'dot-on':i<this.step?'dot-done':''}"></div>`
-    ).join('');
-  },
-
-  renderStep() {
-    if (this.step >= G3_STEPS.length) { this.summary(); return; }
-    const st = G3_STEPS[this.step];
-    this.history.push({ type:'npc', text: st.npc });
-    this.renderChat();
-    this.locked = false;
-    document.getElementById('g3-fb').classList.add('hidden');
-    document.getElementById('g3-opts').innerHTML = st.opts.map((opt, i) =>
-      `<button class="g3-option" onclick="G3.choose(${i})"
-        style="padding:.7rem 1rem;border-radius:.75rem;font-size:.875rem;font-family:'Manrope',sans-serif">
-        <span class="exo" style="color:var(--tx2);font-size:.75rem;margin-right:.4rem">${['A','B','C'][i]} ▸</span>${opt.t}
-      </button>`
-    ).join('');
+    document.getElementById('g3-opts').innerHTML=st.opts.map((opt,i)=>
+      `<button class="g3-option" onclick="G3.choose(${i})" style="padding:1rem 1.2rem">
+        <span class="exo" style="color:var(--tx2);font-size:.95rem;margin-right:.6rem">${['A','B','C'][i]} ▸</span>${opt.t}
+      </button>`).join('');
     this.renderDots();
   },
-
-  choose(idx) {
-    if (this.locked) return;
-    this.locked = true;
-    const st = G3_STEPS[this.step];
-    const opt = st.opts[idx];
-
-    this.history.push({ type:'user', text: opt.t, ok: opt.ok, tag: opt.tag });
+  choose(idx){
+    if(this.locked)return;this.locked=true;
+    const st=G3_STEPS[this.step];const opt=st.opts[idx];
+    this.history.push({type:'user',text:opt.t,ok:opt.ok,tag:opt.tag});
     this.renderChat();
-
-    document.querySelectorAll('#g3-opts button').forEach((btn, i) => {
-      btn.style.pointerEvents = 'none';
-      if (i === idx) {
-        btn.style.borderColor = opt.ok ? 'var(--grn)' : 'var(--red)';
-        btn.style.background = opt.ok ? 'var(--grn10)' : 'var(--red10)';
-      } else if (st.opts[i].ok) {
-        btn.style.borderColor = 'var(--grn)';
-        btn.style.opacity = '.5';
-      } else {
-        btn.style.opacity = '.25';
-      }
+    document.querySelectorAll('#g3-opts button').forEach((btn,i)=>{
+      btn.style.pointerEvents='none';
+      if(i===idx){btn.style.borderColor=opt.ok?'var(--grn)':'var(--red)';btn.style.background=opt.ok?'var(--grn10)':'var(--red10)';}
+      else if(st.opts[i].ok){btn.style.borderColor='var(--grn)';btn.style.opacity='.5';}
+      else btn.style.opacity='.2';
     });
-
-    if (opt.ok) { this.score += 25; addPts(25); }
-    document.getElementById('g3-score').textContent = this.score;
-
-    const fb = document.getElementById('g3-fb');
-    fb.classList.remove('hidden');
-    fb.className = opt.ok ? 'fb-ok' : 'fb-err';
-    fb.style.borderRadius = '.85rem'; fb.style.padding = '.9rem';
-    const isLast = this.step >= G3_STEPS.length - 1;
-    fb.innerHTML =
-      `<div style="font-weight:700;color:${opt.ok?'var(--grn)':'var(--red)'};margin-bottom:.35rem">${opt.ok?'✓ Excellent !':'✗ Pas tout à fait...'}</div>
-       <div style="color:var(--tx2);font-size:.85rem">${opt.fb}</div>
-       <div style="margin-top:.5rem"><span style="font-size:.72rem;padding:.2rem .6rem;border-radius:.35rem;background:var(--blu10);color:var(--blu)">${opt.tag}</span></div>
-       <button onclick="${isLast?'G3.summary()':'G3.next()'}"
-         class="btn btn-grn" style="margin-top:.75rem;padding:.5rem 1.2rem;border-radius:.65rem;font-size:.82rem">
-         ${isLast?'Voir le bilan →':'Continuer →'}
-       </button>`;
+    if(opt.ok){this.score+=25;addPts(25);}
+    document.getElementById('g3-score').textContent=this.score;
+    const fb=document.getElementById('g3-fb');fb.classList.remove('hidden');
+    fb.className=opt.ok?'fb-ok':'fb-err';
+    const last=this.step>=G3_STEPS.length-1;
+    fb.innerHTML=`<div style="font-weight:800;color:${opt.ok?'var(--grn)':'var(--red)'};margin-bottom:.5rem;font-size:1.1rem">${opt.ok?'✓ ¡BIEN!':'✗ NO'}</div>
+      <div style="color:var(--tx2)">Tag: <strong>${opt.tag}</strong></div>
+      <button onclick="${last?'G3.summary()':'G3.next()'}" class="btn btn-grn" style="margin-top:1rem;padding:.85rem 1.5rem">
+        ${last?'RESULTADOS →':'CONTINUAR →'}</button>`;
   },
-
-  next() {
-    this.step++;
-    this.renderStep();
-    setTimeout(() => {
-      const chat = document.getElementById('g3-chat');
-      chat.scrollTop = chat.scrollHeight;
-    }, 100);
-  },
-
-  renderChat() {
-    const chat = document.getElementById('g3-chat');
-    chat.innerHTML = this.history.map(msg => {
-      if (msg.type === 'npc') return `
-        <div class="fade-up" style="display:flex;gap:.6rem;align-items:flex-start">
-          <div style="flex-shrink:0;font-size:1.2rem;margin-top:.1rem">👩‍💼</div>
-          <div class="chat-npc" style="padding:.65rem .9rem;font-size:.875rem;line-height:1.55;max-width:82%">${msg.text}</div>
+  next(){this.step++;this.renderStep();setTimeout(()=>{const c=document.getElementById('g3-chat');c.scrollTop=c.scrollHeight;},100);},
+  renderChat(){
+    const chat=document.getElementById('g3-chat');
+    chat.innerHTML=this.history.map(msg=>{
+      if(msg.type==='npc')return `
+        <div class="fade-up" style="display:flex;gap:.75rem;align-items:flex-start">
+          <div style="flex-shrink:0;font-size:1.6rem">👩‍💼</div>
+          <div class="chat-npc" style="padding:.9rem 1.2rem;font-size:1.05rem;line-height:1.6;max-width:85%">${msg.text}</div>
         </div>`;
       return `
-        <div class="fade-up" style="display:flex;gap:.6rem;align-items:flex-start;justify-content:flex-end">
+        <div class="fade-up" style="display:flex;gap:.75rem;align-items:flex-start;justify-content:flex-end">
           <div class="${msg.ok===true?'chat-user-ok':msg.ok===false?'chat-user-err':'chat-user-neutral'}"
-               style="padding:.65rem .9rem;font-size:.875rem;line-height:1.55;max-width:82%;text-align:right">
+               style="padding:.9rem 1.2rem;font-size:1.05rem;line-height:1.6;max-width:85%;text-align:right">
             ${msg.text}
-            ${msg.tag?`<div style="font-size:.72rem;margin-top:.3rem;color:${msg.ok?'var(--grn)':'var(--red)'}">${msg.ok?'✓':'✗'} ${msg.tag}</div>`:''}
+            ${msg.tag?`<div style="font-size:.85rem;margin-top:.3rem;color:${msg.ok?'var(--grn)':'var(--red)'};font-weight:700">${msg.tag}</div>`:''}
           </div>
-          <div style="flex-shrink:0;font-size:1.2rem;margin-top:.1rem">🧑‍🎓</div>
+          <div style="flex-shrink:0;font-size:1.6rem">🧑‍🎓</div>
         </div>`;
     }).join('');
-    setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 80);
+    setTimeout(()=>{chat.scrollTop=chat.scrollHeight;},80);
   },
-
-  summary() {
-    const total = G3_STEPS.length;
-    const correct = this.history.filter(m => m.type==='user' && m.ok===true).length;
-    const pct = Math.round(correct / total * 100);
-    const col = pct >= 80 ? 'var(--grn)' : pct >= 50 ? 'var(--yel)' : 'var(--red)';
-
-    document.getElementById('g3-m-score').innerHTML =
-      `<div class="exo" style="font-size:2.8rem;font-weight:900;color:${col}">${pct}%</div>
-       <div style="color:var(--tx2)">${correct}/${total} réponses correctes · ${this.score} pts</div>`;
-
-    document.getElementById('g3-m-summary').innerHTML =
-      `<div style="background:var(--surf);border:1px solid var(--brd);border-radius:.85rem;padding:1rem;font-size:.83rem;line-height:1.7;margin-bottom:.25rem">
-        <p style="color:var(--grn);font-weight:700;margin-bottom:.5rem">🧠 BILAN GRAMMATICAL:</p>
-        <p style="color:var(--tx2)">
-          • <strong style="color:var(--grn)">Je voudrais + infinitif</strong> → demande polie (conditionnel)<br>
-          • <strong style="color:var(--grn)">Je suggère que + SUBJONCTIF</strong> → suggestion formelle<br>
-          • <strong style="color:var(--grn)">Je trouve que + INDICATIF</strong> → opinion (≠ subjonctif)<br>
-          • <strong style="color:var(--grn)">Je voudrais que + SUBJONCTIF</strong> → volonté polie<br>
-          • Subjonctif de FAIRE: <em>fasse, fasses, fasse, fassions, fassiez, fassent</em>
-        </p>
-       </div>
-       ${this.history.filter(m=>m.type==='user').map(m=>`
-        <div style="background:${m.ok?'var(--grn10)':'var(--red10)'};border:1px solid ${m.ok?'rgba(0,232,122,.2)':'rgba(255,77,109,.2)'};border-radius:.7rem;padding:.7rem;font-size:.82rem">
-          <span style="color:${m.ok?'var(--grn)':'var(--red)'};font-weight:700">${m.ok?'✓':'✗'}</span>
-          <span style="color:var(--blu);font-size:.75rem;margin-left:.4rem">${m.tag}</span>
-          <div style="color:var(--tx2);margin-top:.25rem;font-style:italic">"${m.text}"</div>
-        </div>`).join('')}`;
-
+  summary(){
+    const total=G3_STEPS.length;const ok=this.history.filter(m=>m.type==='user'&&m.ok===true).length;
+    const pct=Math.round(ok/total*100);const col=pct>=80?'var(--grn)':pct>=50?'var(--yel)':'var(--red)';
+    document.getElementById('g3-m-score').innerHTML=
+      `<div class="exo" style="font-size:3rem;font-weight:900;color:${col}">${pct}%</div>
+       <div style="color:var(--tx2)">${ok}/${total} correctas · <strong>${this.score} pts</strong></div>`;
+    document.getElementById('g3-m-summary').innerHTML=this.history.filter(m=>m.type==='user').map(m=>`
+      <div style="background:${m.ok?'var(--grn10)':'var(--red10)'};border:1px solid ${m.ok?'rgba(0,232,122,.3)':'rgba(255,77,109,.3)'};border-radius:.9rem;padding:.9rem;font-size:.95rem">
+        <span style="color:${m.ok?'var(--grn)':'var(--red)'};font-weight:800">${m.ok?'✓':'✗'}</span>
+        <span style="color:var(--blu);font-size:.9rem;margin-left:.5rem">${m.tag}</span>
+        <div style="color:var(--tx2);margin-top:.3rem;font-style:italic">"${m.text}"</div>
+      </div>`).join('');
     document.getElementById('g3-modal').classList.remove('hidden');
   }
 };
+function startGame3(){G3.start();}
 
-function startGame3() { G3.start(); }
+/* ════════════════ GAME 4 DATA ════════════════ */
+const G4_ROUNDS=[
+  {
+    q:"rapide",
+    hint:"Transforma el adjetivo en adverbio",
+    options:["rapidement","rapidemente","rapidité","rapide"],
+    ans:"rapidement",
+    success:"⚡ Exact ! 'Rapide' → 'rapidement'",
+    fail:"❌ Ojo: no es 'rapidité' ni 'rapidemente'"
+  },
 
-/* ─────────────────────────────────────────────
-   INIT
-───────────────────────────────────────────── */
-window.addEventListener('load', () => {
-  document.getElementById('sec-landing').classList.remove('hidden');
-  ['sec-g1','sec-g2','sec-g3'].forEach(id => document.getElementById(id).classList.add('hidden'));
-});
+  {
+    q:"facile",
+    hint:"Los adverbios suelen terminar en -ment",
+    options:["facilement","facilité","facilemente","facile"],
+    ans:"facilement",
+    success:"🎯 Très bien !",
+    fail:"❌ 'Facilité' es un sustantivo, no un adverbio"
+  },
 
+  {
+    q:"simple",
+    hint:"Escoge el adverbio correcto",
+    options:["simplement","simpleté","simplemente","simple"],
+    ans:"simplement",
+    success:"✨ Parfait !",
+    fail:"❌ La forma correcta es 'simplement'"
+  },
+
+  {
+    q:"heureux",
+    hint:"Los adjetivos en -eux cambian",
+    options:["heureusement","heureuxment","heureusité","heureuse"],
+    ans:"heureusement",
+    success:"🌟 Excellent !",
+    fail:"❌ '-eux' cambia a '-eusement'"
+  },
+
+  {
+    q:"joyeux",
+    hint:"Atención al cambio ortográfico",
+    options:["joyeusement","joyeuxment","joyeuseté","joyeuse"],
+    ans:"joyeusement",
+    success:"🎉 Super !",
+    fail:"❌ La forma correcta es 'joyeusement'"
+  },
+
+  {
+    q:"généreux",
+    hint:"Piensa en la terminación",
+    options:["généreusement","généreuxment","générosité","généreuse"],
+    ans:"généreusement",
+    success:"💎 Magnifique !",
+    fail:"❌ '-eux' → '-eusement'"
+  },
+
+  {
+    q:"intelligent",
+    hint:"Los adjetivos en -ent cambian",
+    options:["intelligemment","intelligentement","intelligence","intelligente"],
+    ans:"intelligemment",
+    success:"🧠 Bravo !",
+    fail:"❌ '-ent' cambia a '-emment'"
+  },
+
+  {
+    q:"évident",
+    hint:"Fíjate bien en la terminación",
+    options:["évidemment","évidentement","évidence","évidente"],
+    ans:"évidemment",
+    success:"🔥 Exactement !",
+    fail:"❌ La forma correcta es 'évidemment'"
+  },
+
+  {
+    q:"constant",
+    hint:"Los adjetivos en -ant cambian",
+    options:["constamment","constantement","constance","constante"],
+    ans:"constamment",
+    success:"🚀 Très bien !",
+    fail:"❌ '-ant' cambia a '-amment'"
+  },
+
+  {
+    q:"brillant",
+    hint:"Observa la doble consonante",
+    options:["brillamment","brillantement","brillance","brillante"],
+    ans:"brillamment",
+    success:"💡 Génial !",
+    fail:"❌ La forma correcta es 'brillamment'"
+  },
+
+  {
+    q:"élégant",
+    hint:"Piensa en la transformación",
+    options:["élégamment","élégantement","élégance","élégante"],
+    ans:"élégamment",
+    success:"👑 Très élégant !",
+    fail:"❌ '-ant' → '-amment'"
+  }
+];
+
+/* ════════════════ GAME 4 LOGIC ════════════════ */
+const G4={
+  round:0,score:0,guessed:[],answered:false,
+  start(){this.round=0;this.score=0;this.guessed=[];this.answered=false;showSection('sec-g4');this.render();},
+  render(){
+  if(this.round>=G4_ROUNDS.length){
+    this.summary();
+    return;
+  }
+
+  const rd=G4_ROUNDS[this.round];
+
+  this.answered=false;
+
+  document.getElementById('g4-sub').textContent=
+    `Ronda ${this.round+1} de ${G4_ROUNDS.length}`;
+
+  document.getElementById('g4-score').textContent=this.score;
+
+  document.getElementById('g4-dots').innerHTML=
+    G4_ROUNDS.map((_,i)=>
+      `<div class="dot ${i===this.round?'dot-on':i<this.round?'dot-done':''}"></div>`
+    ).join('');
+
+  document.getElementById('g4-q').textContent=rd.q;
+  document.getElementById('g4-hint').textContent=rd.hint;
+
+  const shuffled=shuffle([...rd.options]);
+
+  document.getElementById('g4-cards').innerHTML=
+    shuffled.map(opt=>`
+      <div 
+        class="flip-card"
+        data-answer="${opt}"
+        onclick="G4.flip(this,'${opt}')"
+        style="cursor:pointer"
+      >
+        <div class="flip-card-inner">
+
+          <div class="flip-card-front"
+            style="
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              padding:1rem;
+              text-align:center;
+              font-size:1.2rem;
+              font-weight:700;
+            ">
+            ${opt}
+          </div>
+
+          <div class="flip-card-back"
+            style="
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              text-align:center;
+              padding:1rem;
+              font-size:1rem;
+              font-weight:700;
+            ">
+            🤔
+          </div>
+
+        </div>
+      </div>
+    `).join('');
+},
+  flip(el,selected){
+
+  if(this.answered) return;
+
+  this.answered=true;
+
+  const rd=G4_ROUNDS[this.round];
+
+  const isCorrect = selected === rd.ans;
+
+   if(navigator.vibrate){
+    navigator.vibrate(isCorrect ? 60 : [100,50,100]);
+   }
+
+  el.classList.add('flipped');
+
+  if(isCorrect){
+
+    el.classList.add('correct');
+
+    this.score += 25;
+
+    addPts(25);
+
+    document.getElementById('g4-score').textContent=this.score;
+
+    el.querySelector('.flip-card-back').innerHTML=
+      `<div style="color:#00ff99">${rd.success}</div>`;
+
+    this.guessed.push(true);
+
+    setTimeout(()=>{
+      this.round++;
+      this.render();
+    },1400);
+
+  }else{
+
+    el.classList.add('incorrect');
+
+    el.querySelector('.flip-card-back').innerHTML=
+      `<div style="color:#ff6b6b">${rd.fail}</div>`;
+
+    document.querySelectorAll('.flip-card').forEach(card=>{
+
+      if(card.dataset.answer===rd.ans){
+
+        card.classList.add('correct');
+
+      }
+
+    });
+
+    this.guessed.push(false);
+
+    setTimeout(()=>{
+      this.round++;
+      this.render();
+    },2200);
+
+  }
+},
+  summary(){
+    const correct=this.guessed.filter(g=>g.correct).length;
+    const total=G4_ROUNDS.length;
+    const pct=Math.round(correct/total*100);
+    const col=pct>=80?'var(--grn)':pct>=50?'var(--yel)':'var(--red)';
+    const emo=pct>=80?'🏆':pct>=50?'👍':'💪';
+    document.getElementById('g4-m-title').textContent=`${emo} ${correct}/${total} · ${pct}%`;
+    document.getElementById('g4-m-title').style.color=col;
+    document.getElementById('g4-m-score').innerHTML=
+      `<div class="exo" style="font-size:3rem;font-weight:900;color:${col}">+${this.score} pts</div>
+       <div style="color:var(--tx2)">Total: <strong>${totalPts}</strong></div>`;
+    document.getElementById('g4-m-feedback').innerHTML=correct===total?
+      `<div style="text-align:center;color:var(--grn);font-weight:700;padding:1rem;font-size:1.05rem">
+        🎉 ¡PERFECTO! Dominas los adverbios en -MENT, -EMMENT y -AMMENT
+      </div>`
+      :`<div style="text-align:center;color:var(--tx2);font-weight:600;padding:1rem">
+        Las opciones similares te confundieron, ¡pero seguiste! Practica más.
+      </div>`;
+    const btn=document.getElementById('g4-m-next');
+    btn.textContent='▶ REJUGAR';
+    btn.onclick=()=>this.start();
+    document.getElementById('g4-modal').classList.remove('hidden');
+  },
+  closeModal(){document.getElementById('g4-modal').classList.add('hidden');}
+};
+function startGame4(){document.getElementById('g4-modal').classList.add('hidden');G4.start();}
+function resetG4(){G4.render();}
+
+/* INIT */
+window.addEventListener('load',()=>{document.getElementById('sec-landing').classList.remove('hidden');['sec-g1','sec-g2','sec-g3'].forEach(id=>document.getElementById(id).classList.add('hidden'));});
 </script>
 </body>
 </html>
